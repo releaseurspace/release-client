@@ -7,7 +7,7 @@ export default function NavBar() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <div className="w-full h-[78px] bg-white flex flex-row justify-between items-center px-10 py-3 shadow-md fixed top-0">
+    <div className="z-10 w-full h-[72px] bg-white flex flex-row justify-between items-center px-10 py-3 shadow-md fixed top-0">
       <div className="flex flex-row items-center">
         <Image
           src="/logo.svg"
@@ -17,7 +17,7 @@ export default function NavBar() {
           className="cursor-pointer"
           onClick={() => router.push("/")}
         />
-        <div className="flex flex-row gap-8 ml-12 *:font-semibold *:text-sm *:select-none *:cursor-pointer">
+        <div className="flex flex-row gap-8 ml-12 *:font-bold *:text-xl *:select-none *:cursor-pointer">
           <div
             className={`${pathname === "/property" ? "text-[#9747FF]" : ""}`}
             onClick={() => router.push("/property")}
@@ -33,10 +33,10 @@ export default function NavBar() {
         </div>
       </div>
       <div className="flex flex-row items-center gap-4">
-        <button className="bg-[#2D125F] text-white rounded-xl font-bold text-base px-2 h-10 w-[113px]">
+        <button className="bg-[#2D125F] text-white rounded-xl font-bold text-base h-10 w-[104px]">
           호스트 모드
         </button>
-        <Image src="/profile.svg" width={40} height={40} alt="profile" />
+        <Image src="/profile.svg" width={40} height={40} alt="profile" className="cursor-pointer" />
       </div>
     </div>
   );
