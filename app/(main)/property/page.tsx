@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
 import { ask } from "./actions";
 import MultilineText from "@/app/components/MultilineText";
+import TypingText from "@/app/components/TypingText";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -13,11 +14,6 @@ export default function Home() {
   const [questionInput, setQuestionInput] = useState<string>("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
-
-  console.log("state", state);
-  console.log("isPending", isPending);
-  console.log("questions", questions);
-  console.log("answers", answers);
 
   useEffect(() => {
     if (state?.answer) {
@@ -42,15 +38,18 @@ export default function Home() {
                   <div className="bg-[#F2F2F7] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
                     <MultilineText text={question} />
                   </div>
-                  <div className="flex flex-row mr-auto mt-2 gap-2">
+                  <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
                     <Image
                       src="/logo-ai.svg"
                       width={36}
                       height={36}
                       alt="ai chatbot"
                     />
-                    <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl mt-2 size-fit">
-                      <MultilineText text={answers[idx]} />
+                    <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
+                      {answers[idx] ? (
+                        // <MultilineText text={answers[idx]} />
+                        <TypingText text={answers[idx]} />
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -79,14 +78,7 @@ export default function Home() {
 
           <div className="gap-1 flex flex-col">
             <div className="relative">
-              <form
-                action={dispatch}
-                // onSubmit={(e) => {
-                //   e.preventDefault();
-                //   setQuestions((prev) => [...prev, questionInput]);
-                //   setQuestionInput("");
-                // }}
-              >
+              <form action={dispatch}>
                 <textarea
                   placeholder="릴리스 AI 비서에게 물어보기"
                   name="question"
@@ -94,18 +86,19 @@ export default function Home() {
                   onChange={(e) => setQuestionInput(e.target.value)}
                   className="bg-[#EFEFEF] w-full h-auto max-h-14 rounded-full outline-none pl-6 pr-12 py-4 resize-none overflow-hidden"
                 ></textarea>
-                <button disabled={isPending}>
+                <button
+                  disabled={isPending || !questionInput.length}
+                  onClick={() => {
+                    setQuestions((prev) => [...prev, questionInput]);
+                    setTimeout(() => setQuestionInput(""), 1);
+                  }}
+                >
                   <Image
                     src="/btn-textarea-submit.svg"
                     width={40}
                     height={40}
                     alt="submit"
                     className="absolute top-2 right-2 cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setQuestions((prev) => [...prev, questionInput]);
-                      setQuestionInput("");
-                    }}
                   />
                 </button>
               </form>
