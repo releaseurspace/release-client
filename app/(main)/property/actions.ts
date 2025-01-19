@@ -2,11 +2,9 @@ import { ChatbotRes } from "@/app/types/chatbot";
 import { Property } from "@/app/types/property";
 import callAPI from "@/app/util/call-api";
 
-export async function ask(prevState: any, formData: FormData) {
-  //eslint-disable-line
+export async function ask(prevState: any, formData: FormData) {  //eslint-disable-line
 
   const question = formData.get("question") as string;
-  console.log(question);
   const res = await (
     await callAPI({
       url: "http://3.38.128.30:3080/langchain",

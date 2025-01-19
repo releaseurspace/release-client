@@ -19,7 +19,7 @@ export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
-  const [showPropertyDetail, setShowPropertyDetail] = useState<boolean>(true);
+  // const [showPropertyDetail, setShowPropertyDetail] = useState<boolean>(true);
 
   useEffect(() => {
     if (state?.answer) {
