@@ -19,7 +19,6 @@ export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
-  // const [showPropertyDetail, setShowPropertyDetail] = useState<boolean>(true);
 
   useEffect(() => {
     if (state?.answer) {
@@ -42,7 +41,15 @@ export default function Home() {
         />
 
         <div className="w-full h-full">
-          <MapContainer />
+          <MapContainer
+            markerData={properties.map((property) => {
+              return {
+                id: property.id,
+                lat: +property.latitude,
+                lng: +property.longitude,
+              };
+            })}
+          />
         </div>
 
         <div className="min-w-[432px] max-w-[432px] h-full flex flex-col px-4 pb-6">
@@ -60,9 +67,18 @@ export default function Home() {
                       height={36}
                       alt="ai chatbot"
                     />
-                    <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                      {answers[idx] ? <TypingText text={answers[idx]} /> : null}
-                    </div>
+                    {answers[idx] ? (
+                      <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
+                        <TypingText text={answers[idx]} />
+                      </div>
+                    ) : (
+                      <Image
+                        src="/loading2.gif"
+                        width={60}
+                        height={60}
+                        alt="loading..."
+                      />
+                    )}
                   </div>
                 </div>
               ))}

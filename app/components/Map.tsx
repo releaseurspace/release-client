@@ -1,12 +1,18 @@
 "use client";
 
 import Script from "next/script";
-import { Coordinates, NaverMap } from "@/app/types/map";
+import { Coordinates, markerData, NaverMap } from "@/app/types/map";
 import { useEffect, useRef } from "react";
 
 const MAP_ID = "naver-map";
 
-export default function Map({ loc }: { loc: Coordinates }) {
+export default function Map({
+  loc,
+  markerData,
+}: {
+  loc: Coordinates;
+  markerData: markerData[];
+}) {
   const mapRef = useRef<NaverMap | null>(null);
 
   useEffect(() => {
@@ -22,9 +28,42 @@ export default function Map({ loc }: { loc: Coordinates }) {
         style: naver.maps.ZoomControlStyle.SMALL,
       },
     };
-
-    mapRef.current = new naver.maps.Map(MAP_ID, mapOptions);
+    const map = new naver.maps.Map(MAP_ID, mapOptions);
+    mapRef.current = map;
   }, [loc]);
+
+  useEffect(() => {
+    const markers = [] as naver.maps.Marker[];
+
+    const total = markerData.reduce(
+      (acc, marker) => {
+        acc.latSum += marker.lat;
+        acc.lngSum += marker.lng;
+        return acc;
+      },
+      { latSum: 0, lngSum: 0 }
+    );
+
+    const locAverage = [
+      total.lngSum / markerData.length,
+      total.latSum / markerData.length,
+    ] as Coordinates;
+
+    mapRef.current?.setOptions({
+      // zoom: 10,
+      center: new window.naver.maps.LatLng(locAverage),
+    });
+
+    markerData.map((spot) => {
+      const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
+      const marker = new naver.maps.Marker({
+        position: latlng,
+        map: mapRef.current!,
+      });
+
+      markers.push(marker);
+    });
+  }, [markerData]);
 
   // const initializeMap = useCallback(() => {
   //   const mapOptions = {
@@ -127,7 +166,7 @@ export default function Map({ loc }: { loc: Coordinates }) {
         src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}`}
         // onReady={initializeMap}
       ></Script>
-      <div id={MAP_ID} className="w-full h-full -z-10" />
+      <div id={MAP_ID} className="w-full h-full" />
     </>
   );
 }

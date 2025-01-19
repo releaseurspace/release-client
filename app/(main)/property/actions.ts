@@ -7,7 +7,7 @@ export async function ask(prevState: any, formData: FormData) {  //eslint-disabl
   const question = formData.get("question") as string;
   const res = await (
     await callAPI({
-      url: "http://3.38.128.30:3080/langchain",
+      url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain",
       method: "POST",
       isPrivate: false,
       body: {

@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Coordinates } from "@/app/types/map";
+import { Coordinates, markerData } from "@/app/types/map";
 import Map from "./Map";
 
-export default function MapContainer() {
+export default function MapContainer({
+  markerData,
+}: {
+  markerData: markerData[];
+}) {
   const [loc, setLoc] = useState<Coordinates>();
 
   const initLocation = () => {
@@ -12,7 +16,7 @@ export default function MapContainer() {
       (position) => {
         setLoc([position.coords.longitude, position.coords.latitude]);
       },
-      (error) => { //eslint-disable-line
+      (error) => {  //eslint-disable-line
         setLoc([126.9783882, 37.5666103]);
       }
     );
@@ -22,5 +26,5 @@ export default function MapContainer() {
     initLocation();
   }, []);
 
-  return loc && <Map loc={loc} />;
+  return loc && <Map loc={loc} markerData={markerData} />;
 }
