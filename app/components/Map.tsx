@@ -16,10 +16,6 @@ export default function Map({ loc }: { loc: Coordinates }) {
       zoom: 15,
       scaleControl: true,
       mapDataControl: true,
-      logoControl: true,
-      logoControlOptions: {
-        position: naver.maps.Position.BOTTOM_LEFT,
-      },
       zoomControl: true,
       zoomControlOptions: {
         position: naver.maps.Position.TOP_RIGHT,

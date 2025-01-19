@@ -7,6 +7,8 @@ import { useActionState, useEffect, useState } from "react";
 import { ask } from "./actions";
 import MultilineText from "@/app/components/MultilineText";
 import TypingText from "@/app/components/TypingText";
+import { Property } from "@/app/types/property";
+import PropertyList from "@/app/components/PropertyList";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -14,10 +16,17 @@ export default function Home() {
   const [questionInput, setQuestionInput] = useState<string>("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [properties, setProperties] = useState<Property[]>([]);
+
+  const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
+  const [showPropertyDetail, setShowPropertyDetail] = useState<boolean>(true);
 
   useEffect(() => {
     if (state?.answer) {
       setAnswers((prev) => [...prev, state?.answer as string]);
+    }
+    if (state?.properties) {
+      setProperties(state?.properties);
     }
   }, [state]);
 
@@ -26,6 +35,12 @@ export default function Home() {
       <NavBar />
 
       <div className="flex flex-row h-full w-full pt-[72px]">
+        <PropertyList
+          properties={properties}
+          showPropertyList={showPropertyList}
+          setShowPropertyList={setShowPropertyList}
+        />
+
         <div className="w-full h-full">
           <MapContainer />
         </div>
@@ -46,10 +61,7 @@ export default function Home() {
                       alt="ai chatbot"
                     />
                     <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                      {answers[idx] ? (
-                        // <MultilineText text={answers[idx]} />
-                        <TypingText text={answers[idx]} />
-                      ) : null}
+                      {answers[idx] ? <TypingText text={answers[idx]} /> : null}
                     </div>
                   </div>
                 </div>
@@ -90,7 +102,8 @@ export default function Home() {
                   disabled={isPending || !questionInput.length}
                   onClick={() => {
                     setQuestions((prev) => [...prev, questionInput]);
-                    setTimeout(() => setQuestionInput(""), 1);
+                    setShowPropertyList(true);
+                    setTimeout(() => setQuestionInput(""), 0.1);
                   }}
                 >
                   <Image
