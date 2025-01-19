@@ -127,7 +127,7 @@ export default function Map({ loc }: { loc: Coordinates }) {
         src={`https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${process.env.NEXT_PUBLIC_NAVER_CLIENT_ID}`}
         // onReady={initializeMap}
       ></Script>
-      <div id={MAP_ID} style={{ width: "100%", height: "100%" }} />
+      <div id={MAP_ID} className="w-full h-full -z-10" />
     </>
   );
 }
