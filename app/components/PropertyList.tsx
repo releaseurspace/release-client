@@ -54,7 +54,7 @@ export default function PropertyList({
           </div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col scrollbar-hide">
           {properties.map((property, idx) => (
             <div
               key={idx}

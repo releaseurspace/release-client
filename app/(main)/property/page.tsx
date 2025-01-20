@@ -21,6 +21,16 @@ export default function Home() {
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
 
+  const [username, setUsername] = useState<string>("");
+
+  function chatbotSumbit() {
+    const formData = new FormData();
+    formData.append("question", questionInput);
+    formData.append("username", username);
+
+    dispatch(formData);
+  }
+
   useEffect(() => {
     if (state?.answer) {
       setAnswers((prev) => [...prev, state?.answer as string]);
@@ -72,7 +82,7 @@ export default function Home() {
 
         <div className="min-w-[432px] max-w-[432px] h-full flex flex-col px-4 pb-6">
           {questions.length || answers.length ? (
-            <div className="h-full flex flex-col overflow-y-scroll pb-4">
+            <div className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide">
               {questions.map((question, idx) => (
                 <div key={idx}>
                   <div className="bg-[#F2F2F7] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
@@ -124,7 +134,7 @@ export default function Home() {
 
           <div className="gap-1 flex flex-col">
             <div className="relative">
-              <form action={dispatch}>
+              <form action={chatbotSumbit}>
                 <textarea
                   placeholder="릴리스 AI 비서에게 물어보기"
                   name="question"
@@ -171,6 +181,15 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      <input
+        placeholder="임시 유저이름"
+        value={username}
+        onChange={(e) => {
+          setUsername(e.target.value);
+        }}
+        className="fixed top-5 right-60 z-[99] border-2 w-36"
+      ></input>
     </div>
   );
 }

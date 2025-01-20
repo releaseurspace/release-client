@@ -1,3 +1,5 @@
+"use server";
+
 import { ChatbotRes } from "@/app/types/chatbot";
 import { Property } from "@/app/types/property";
 import callAPI from "@/app/util/call-api";
@@ -5,13 +7,14 @@ import callAPI from "@/app/util/call-api";
 export async function ask(prevState: any, formData: FormData) {  //eslint-disable-line
 
   const question = formData.get("question") as string;
+  const username = formData.get("username") as string;
   const res = await (
     await callAPI({
       url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain",
       method: "POST",
       isPrivate: false,
       body: {
-        userId: "chaerin",
+        userId: username,
         content: question,
       },
     })
