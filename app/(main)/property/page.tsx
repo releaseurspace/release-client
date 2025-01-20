@@ -14,6 +14,7 @@ export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
 
   const [questionInput, setQuestionInput] = useState<string>("");
+  const [promptLines, setPromptLines] = useState<number>(1);
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -34,6 +35,21 @@ export default function Home() {
       <NavBar />
 
       <div className="flex flex-row h-full w-full pt-[72px]">
+        {properties.length > 0 ? (
+          <div
+            className="fixed top-24 w-12 h-14 bg-white rounded-r-full z-20 shadow-lg flex"
+            onClick={() => setShowPropertyList(true)}
+          >
+            <Image
+              src="/logo-ai.svg"
+              width={36}
+              height={36}
+              alt="ai chatbot"
+              className="ml-auto mr-1"
+            />
+          </div>
+        ) : null}
+
         <PropertyList
           properties={properties}
           showPropertyList={showPropertyList}
@@ -47,6 +63,8 @@ export default function Home() {
                 id: property.id,
                 lat: +property.latitude,
                 lng: +property.longitude,
+                monthly_rent: property.monthly_rent,
+                deposit: property.deposit,
               };
             })}
           />
@@ -73,7 +91,7 @@ export default function Home() {
                       </div>
                     ) : (
                       <Image
-                        src="/loading2.gif"
+                        src="/loading1.gif"
                         width={60}
                         height={60}
                         alt="loading..."
@@ -111,8 +129,12 @@ export default function Home() {
                   placeholder="릴리스 AI 비서에게 물어보기"
                   name="question"
                   value={questionInput}
-                  onChange={(e) => setQuestionInput(e.target.value)}
-                  className="bg-[#EFEFEF] w-full h-auto max-h-14 rounded-full outline-none pl-6 pr-12 py-4 resize-none overflow-hidden"
+                  onChange={(e) => {
+                    setPromptLines(e.target.value.split("\n").length);
+                    setQuestionInput(e.target.value);
+                  }}
+                  style={{ height: 56 + (promptLines - 1) * 20 }}
+                  className={`bg-[#EFEFEF] w-full min-h-14 max-h-40 rounded-[24px] outline-none pl-6 pr-12 py-4 resize-none overflow-y-scroll scrollbar-hide`}
                 ></textarea>
                 <button
                   disabled={isPending || !questionInput.length}
@@ -127,7 +149,7 @@ export default function Home() {
                     width={40}
                     height={40}
                     alt="submit"
-                    className="absolute top-2 right-2 cursor-pointer"
+                    className="absolute bottom-3.5 right-2 cursor-pointer"
                   />
                 </button>
               </form>

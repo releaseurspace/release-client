@@ -22,7 +22,7 @@ export default function PropertyList({
   return (
     <>
       <motion.div
-        className="min-w-[400px] bg-white h-full overflow-y-scroll fixed z-10"
+        className="min-w-[400px] bg-white h-full overflow-y-scroll fixed z-20"
         initial="hidden"
         animate={
           properties.length > 0 && showPropertyList ? "visible" : "hidden"

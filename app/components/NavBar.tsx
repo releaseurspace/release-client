@@ -7,7 +7,7 @@ export default function NavBar() {
   const router = useRouter();
   const pathname = usePathname();
   return (
-    <div className="z-10 w-full h-[72px] bg-white flex flex-row justify-between items-center px-10 py-3 shadow-md fixed top-0">
+    <div className="z-50 w-full h-[72px] bg-white flex flex-row justify-between items-center px-10 py-3 shadow-md fixed top-0">
       <div className="flex flex-row items-center">
         <Image
           src="/logo.svg"

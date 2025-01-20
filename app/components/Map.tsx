@@ -3,6 +3,8 @@
 import Script from "next/script";
 import { Coordinates, markerData, NaverMap } from "@/app/types/map";
 import { useEffect, useRef } from "react";
+import CustomMapMarker from "../util/custom-map-marker";
+import formatMapPrice from "../util/format-price";
 
 const MAP_ID = "naver-map";
 
@@ -21,7 +23,7 @@ export default function Map({
       minZoom: 6,
       zoom: 15,
       scaleControl: true,
-      mapDataControl: true,
+      mapDataControl: false,
       zoomControl: true,
       zoomControlOptions: {
         position: naver.maps.Position.TOP_RIGHT,
@@ -30,39 +32,54 @@ export default function Map({
     };
     const map = new naver.maps.Map(MAP_ID, mapOptions);
     mapRef.current = map;
+
   }, [loc]);
 
   useEffect(() => {
-    const markers = [] as naver.maps.Marker[];
+    if (markerData.length > 0) {
+      const markers = [] as naver.maps.Marker[];
 
-    const total = markerData.reduce(
-      (acc, marker) => {
-        acc.latSum += marker.lat;
-        acc.lngSum += marker.lng;
-        return acc;
-      },
-      { latSum: 0, lngSum: 0 }
-    );
+      const total = markerData.reduce(
+        (acc, marker) => {
+          acc.latSum += marker.lat;
+          acc.lngSum += marker.lng - 0.015;
+          return acc;
+        },
+        { latSum: 0, lngSum: 0 }
+      );
 
-    const locAverage = [
-      total.lngSum / markerData.length,
-      total.latSum / markerData.length,
-    ] as Coordinates;
+      const locAverage = [
+        total.lngSum / markerData.length,
+        total.latSum / markerData.length,
+      ] as Coordinates;
 
-    mapRef.current?.setOptions({
-      // zoom: 10,
-      center: new window.naver.maps.LatLng(locAverage),
-    });
-
-    markerData.map((spot) => {
-      const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
-      const marker = new naver.maps.Marker({
-        position: latlng,
-        map: mapRef.current!,
+      mapRef.current?.setOptions({
+        zoom: 13.5,
+        center: new window.naver.maps.LatLng(locAverage),
       });
 
-      markers.push(marker);
-    });
+      markerData.map((spot) => {
+        const monthly_rent = formatMapPrice(spot.monthly_rent);
+        const deposit = formatMapPrice(spot.deposit);
+
+        const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
+        const marker = new naver.maps.Marker({
+          position: latlng,
+          map: mapRef.current!,
+          clickable: true,
+          icon: {
+            //html element를 반환하는 CustomMapMarker 컴포넌트 할당
+            content: CustomMapMarker({ monthly_rent, deposit }),
+            // 마커의 크기 지정
+            // size: new naver.maps.Size(38, 58),
+            // //마커의 기준위치 지정
+            // anchor: new naver.maps.Point(19, 58),
+          },
+        });
+
+        markers.push(marker);
+      });
+    }
   }, [markerData]);
 
   // const initializeMap = useCallback(() => {
