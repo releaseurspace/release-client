@@ -133,6 +133,14 @@ export default function Home() {
                     setPromptLines(e.target.value.split("\n").length);
                     setQuestionInput(e.target.value);
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      const submitButton = e.currentTarget
+                        .nextElementSibling as HTMLButtonElement;
+                      submitButton?.click();
+                    }
+                  }}
                   style={{ height: 56 + (promptLines - 1) * 20 }}
                   className={`bg-[#EFEFEF] w-full min-h-14 max-h-40 rounded-[24px] outline-none pl-6 pr-12 py-4 resize-none overflow-y-scroll scrollbar-hide`}
                 ></textarea>
