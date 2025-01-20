@@ -139,6 +139,7 @@ export default function Home() {
                 <button
                   disabled={isPending || !questionInput.length}
                   onClick={() => {
+                    setPromptLines(1);
                     setQuestions((prev) => [...prev, questionInput]);
                     setShowPropertyList(true);
                     setTimeout(() => setQuestionInput(""), 0.1);

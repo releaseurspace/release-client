@@ -32,7 +32,6 @@ export default function Map({
     };
     const map = new naver.maps.Map(MAP_ID, mapOptions);
     mapRef.current = map;
-
   }, [loc]);
 
   useEffect(() => {
