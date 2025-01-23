@@ -21,6 +21,9 @@ export default function Home() {
   const [properties, setProperties] = useState<Property[]>([]);
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
+  const [focusedPropertyId, setFocusedPropertyId] = useState<number | null>(
+    null
+  );
 
   const [username, setUsername] = useState<string>("");
 
@@ -64,6 +67,8 @@ export default function Home() {
           properties={properties}
           showPropertyList={showPropertyList}
           setShowPropertyList={setShowPropertyList}
+          focusedPropertyId={focusedPropertyId}
+          setFocusedPropertyId={setFocusedPropertyId}
         />
 
         <div className="w-full h-full">
@@ -77,6 +82,9 @@ export default function Home() {
                 deposit: property.deposit,
               };
             })}
+            focusedPropertyId={focusedPropertyId}
+            setShowPropertyList={setShowPropertyList}
+            setFocusedPropertyId={setFocusedPropertyId}
           />
         </div>
 
@@ -86,7 +94,7 @@ export default function Home() {
               <AutoScrollDiv>
                 {questions.map((question, idx) => (
                   <div key={idx}>
-                    <div className="bg-[#F2F2F7] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
+                    <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
                       <MultilineText text={question} />
                     </div>
                     <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
@@ -97,7 +105,7 @@ export default function Home() {
                         alt="ai chatbot"
                       />
                       {answers[idx] ? (
-                        <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
+                        <div className="bg-[#F4F4F4] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
                           <TypingText text={answers[idx]} />
                         </div>
                       ) : (

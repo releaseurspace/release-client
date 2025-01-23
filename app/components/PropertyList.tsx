@@ -2,22 +2,25 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Property } from "../types/property";
 import { Dispatch, SetStateAction } from "react";
+import PropertyDetail from "./PropertyDetail";
 
 export default function PropertyList({
   properties,
   showPropertyList,
   setShowPropertyList,
+  focusedPropertyId,
+  setFocusedPropertyId,
 }: {
   properties: Property[];
   showPropertyList: boolean;
   setShowPropertyList: Dispatch<SetStateAction<boolean>>;
+  focusedPropertyId: number | null;
+  setFocusedPropertyId: Dispatch<SetStateAction<number | null>>;
 }) {
   const variants = {
     hidden: { x: "-100%", opacity: 0 },
     visible: { x: 0, opacity: 1 },
   };
-
-  //   const [showPropertyDetail, setShowPropertyDetail] = useState<boolean>(true);
 
   return (
     <>
@@ -42,7 +45,10 @@ export default function PropertyList({
               height={20}
               alt="close"
               className="cursor-pointer"
-              onClick={() => setShowPropertyList(false)}
+              onClick={() => {
+                setShowPropertyList(false);
+                setFocusedPropertyId(null);
+              }}
             />
           </div>
           <div>
@@ -67,16 +73,23 @@ export default function PropertyList({
           {properties.map((property, idx) => (
             <div
               key={idx}
-              className="h-[129px] w-full flex flex-row py-4 px-5 gap-5"
-              //   onClick={() => setShowPropertyDetail(true)}
+              className="h-[129px] w-full flex flex-row py-4 px-5 gap-5 cursor-pointer relative"
+              onClick={() => setFocusedPropertyId(property.id)}
             >
               <Image
-                src="example-property-photo.svg"
-                width={98}
-                height={98}
+                src="example-property-thumbnail.svg"
+                width={100}
+                height={100}
                 alt="thumbnail"
               />
-              <div className="w-full space-y-1">
+              <Image
+                src="/btn-heart-outline.svg"
+                width={19.6}
+                height={19.6}
+                alt="heart"
+                className="absolute top-[90px] left-[90px]"
+              />
+              <div className="w-full space-y-[3px]">
                 <div className="space-y-[2px]">
                   <div className="text-xs text-[#121212]">
                     {property.purpose}
@@ -90,8 +103,8 @@ export default function PropertyList({
                     {property.maintenance_fee}만
                   </div>
                 </div>
-                <div className="space-y-[1px]">
-                  <hr />
+                <hr />
+                <div>
                   <div className="text-xs text-[#6B6B6B]">
                     {Math.floor(property.size / 3.3)}평 / {property.floor} /{" "}
                     {property.nearest_station} {property.distance_to_station}
@@ -107,15 +120,22 @@ export default function PropertyList({
           ))}
         </div>
       </motion.div>
-      {/* <motion.div
-        className="min-w-[400px] bg-white h-full overflow-y-scroll fixed left-[400px] z-10"
+
+      <motion.div
+        className="w-[355px] bg-white h-full overflow-y-scroll fixed left-[355px] z-10 scrollbar-hide border-l-[1px] border-l-[#E9E9F1]"
         initial="hidden"
-        animate={
-          properties.length > 0 && showPropertyList ? "visible" : "hidden"
-        }
+        animate={focusedPropertyId ? "visible" : "hidden"}
+        hidden={!focusedPropertyId}
         transition={{ duration: 0.5 }}
         variants={variants}
-      ></motion.div> */}
+      >
+        <PropertyDetail
+          setFocusedPropertyId={setFocusedPropertyId}
+          property={
+            properties.find((property) => property.id === focusedPropertyId)
+          }
+        />
+      </motion.div>
     </>
   );
 }
