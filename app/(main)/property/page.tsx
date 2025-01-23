@@ -9,6 +9,7 @@ import MultilineText from "@/app/components/MultilineText";
 import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
+import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -44,18 +45,17 @@ export default function Home() {
     <div className="h-[100vh]">
       <NavBar />
 
-      <div className="flex flex-row h-full w-full pt-[72px]">
+      <div className="flex flex-row h-full w-full pt-[56px]">
         {properties.length > 0 ? (
           <div
-            className="fixed top-24 w-12 h-14 bg-white rounded-r-full z-20 shadow-lg flex"
+            className="fixed top-24 w-[58px] h-[66px] bg-white rounded-r-[17px] z-20 shadow-xl flex justify-center items-center cursor-pointer"
             onClick={() => setShowPropertyList(true)}
           >
             <Image
-              src="/logo-ai.svg"
-              width={36}
-              height={36}
+              src="/btn-sidebar.svg"
+              width={30.8}
+              height={28}
               alt="ai chatbot"
-              className="ml-auto mr-1"
             />
           </div>
         ) : null}
@@ -83,46 +83,53 @@ export default function Home() {
         <div className="min-w-[432px] max-w-[432px] h-full flex flex-col px-4 pb-6">
           {questions.length || answers.length ? (
             <div className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide">
-              {questions.map((question, idx) => (
-                <div key={idx}>
-                  <div className="bg-[#F2F2F7] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
-                    <MultilineText text={question} />
-                  </div>
-                  <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
-                    <Image
-                      src="/logo-ai.svg"
-                      width={36}
-                      height={36}
-                      alt="ai chatbot"
-                    />
-                    {answers[idx] ? (
-                      <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                        <TypingText text={answers[idx]} />
-                      </div>
-                    ) : (
+              <AutoScrollDiv>
+                {questions.map((question, idx) => (
+                  <div key={idx}>
+                    <div className="bg-[#F2F2F7] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
+                      <MultilineText text={question} />
+                    </div>
+                    <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
                       <Image
-                        src="/loading1.gif"
-                        width={60}
-                        height={60}
-                        alt="loading..."
+                        src="/logo-ai.svg"
+                        width={36}
+                        height={36}
+                        alt="ai chatbot"
                       />
-                    )}
+                      {answers[idx] ? (
+                        <div className="border-[1px] border-[#CABBE6] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
+                          <TypingText text={answers[idx]} />
+                        </div>
+                      ) : (
+                        <Image
+                          src="/loading1.gif"
+                          width={60}
+                          height={60}
+                          alt="loading..."
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </AutoScrollDiv>
             </div>
           ) : (
-            <div className="h-full flex flex-col justify-center items-center gap-4">
+            <div className="h-full flex flex-col justify-center items-center">
               <Image
                 src="/logo-ai.svg"
                 width={54}
                 height={54}
                 alt="ai chatbot"
               />
-              <div className="font-bold text-2xl text-[#2D125F]">
-                Release 매물 비서
+              <div className="font-bold text-xl text-[#2D125F] mt-[12px]">
+                릴리스 AI 비서
               </div>
-              <div className="shadow-md rounded-[32px] p-[10px] text-center text-base font-medium text-[#645B75] w-[363px] h-[103px] items-center">
+              <div
+                style={{
+                  boxShadow: `0px 4px 6.3px 0px var(--Schemes-Outline-Variant, #CAC4D0)`,
+                }}
+                className="mt-[26px] rounded-[32px] p-[10px] text-center text-base font-medium text-[#6B6B6B] w-[363px] h-[93px] items-center"
+              >
                 안녕하세요! 🏢
                 <br />
                 원하는 상업용 매물을 찾아주는 릴리스 AI 비서입니다!
@@ -151,8 +158,8 @@ export default function Home() {
                       submitButton?.click();
                     }
                   }}
-                  style={{ height: 56 + (promptLines - 1) * 20 }}
-                  className={`bg-[#EFEFEF] w-full min-h-14 max-h-40 rounded-[24px] outline-none pl-6 pr-12 py-4 resize-none overflow-y-scroll scrollbar-hide`}
+                  style={{ height: 40 + (promptLines - 1) * 20 }}
+                  className={`bg-[#EFEFEF] w-full min-h-10 max-h-40 rounded-[24px] outline-none font-normal text-base pl-6 pr-12 py-2 resize-none overflow-y-scroll scrollbar-hide`}
                 ></textarea>
                 <button
                   disabled={isPending || !questionInput.length}
@@ -165,10 +172,10 @@ export default function Home() {
                 >
                   <Image
                     src="/btn-textarea-submit.svg"
-                    width={40}
-                    height={40}
+                    width={32}
+                    height={32}
                     alt="submit"
-                    className="absolute bottom-3.5 right-2 cursor-pointer"
+                    className="absolute bottom-[10.5px] right-[5px] cursor-pointer"
                   />
                 </button>
               </form>
@@ -188,7 +195,7 @@ export default function Home() {
         onChange={(e) => {
           setUsername(e.target.value);
         }}
-        className="fixed top-5 right-60 z-[99] border-2 w-36"
+        className="fixed top-3.5 right-60 z-[99] border-2 w-36"
       ></input>
     </div>
   );

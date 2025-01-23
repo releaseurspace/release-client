@@ -3,8 +3,9 @@
 import Script from "next/script";
 import { Coordinates, markerData, NaverMap } from "@/app/types/map";
 import { useEffect, useRef } from "react";
-import CustomMapMarker from "../util/custom-map-marker";
+import CustomMapMarker from "../lib/custom-map-marker";
 import formatMapPrice from "../util/format-price";
+import { guGeojson } from "../lib/seoulGeojson";
 
 const MAP_ID = "naver-map";
 
@@ -32,6 +33,76 @@ export default function Map({
     };
     const map = new naver.maps.Map(MAP_ID, mapOptions);
     mapRef.current = map;
+
+    naver.maps.Event.once(map, "init", () => {
+      const regionGeoJson = JSON.parse(guGeojson);
+      console.log(regionGeoJson);
+
+      const tooltip = $(
+        '<div style="position:absolute;z-index:1000;padding:5px 10px;background-color:#fff;border:solid 2px #000;font-size:14px;pointer-events:none;display:none;"></div>'
+      );
+
+      tooltip.appendTo(map.getPanes().floatPane);
+
+      map.data.setStyle(function (feature) {
+        const styleOptions = {
+          fillColor: "#ff0000",
+          fillOpacity: 0.0001,
+          strokeColor: "#ff0000",
+          strokeWeight: 2,
+          strokeOpacity: 0.4,
+        };
+
+        if (feature.getProperty("focus")) {
+          styleOptions.fillOpacity = 0.6;
+          styleOptions.fillColor = "#0f0";
+          styleOptions.strokeColor = "#0f0";
+          styleOptions.strokeWeight = 4;
+          styleOptions.strokeOpacity = 1;
+        }
+
+        return styleOptions;
+      });
+
+      // regionGeoJson.forEach(function (geojson) {
+      //   map.data.addGeoJson(geojson, false);
+      // });
+      map.data.addGeoJson(regionGeoJson, true);
+
+      map.data.addListener("click", function (e) {
+        const feature = e.feature;
+
+        if (feature.getProperty("focus") !== true) {
+          feature.setProperty("focus", true);
+        } else {
+          feature.setProperty("focus", false);
+        }
+      });
+
+      map.data.addListener("mouseover", function (e) {
+        const feature = e.feature,
+          regionName = feature.getProperty("area1");
+
+        tooltip
+          .css({
+            display: "",
+            left: e.offset.x,
+            top: e.offset.y,
+          })
+          .text(regionName);
+
+        map.data.overrideStyle(feature, {
+          fillOpacity: 0.6,
+          strokeWeight: 4,
+          strokeOpacity: 1,
+        });
+      });
+
+      map.data.addListener("mouseout", function (e) {
+        tooltip.hide().empty();
+        // map.data.revertStyle();
+      });
+    });
   }, [loc]);
 
   const markersRef = useRef<naver.maps.Marker[]>([]);
@@ -61,16 +132,13 @@ export default function Map({
       });
 
       const newMarkers = markerData.map((spot) => {
-        const monthly_rent = formatMapPrice(spot.monthly_rent);
-        const deposit = formatMapPrice(spot.deposit);
-
         const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
         const marker = new naver.maps.Marker({
           position: latlng,
           map: mapRef.current,
           clickable: true,
           icon: {
-            content: CustomMapMarker({ monthly_rent, deposit }),
+            content: CustomMapMarker({ id: spot.id }),
           },
         });
 
