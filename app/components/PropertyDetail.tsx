@@ -85,9 +85,7 @@ export default function PropertyDetail({
       </div>
 
       <div className="w-full overflow-y-scroll">
-        <div className="absolute bg-yellow-500 w-4 h-4">
-            <div style={{top: -4, position: "absolute" , backgroundColor: "yellow"}}></div>
-        </div>
+      
       </div>
 
       <div className="w-[355px] h-[48px] fixed bottom-0 border-t-[1px] border-t-[#E9E9F1] flex justify-between items-center px-4">
