@@ -85,7 +85,13 @@ export default function PropertyDetail({
       </div>
 
       <div className="w-full overflow-y-scroll">
-      
+        <div
+//           style="fontSize: 12; width: 36; height: 36; border-radius: 12px;
+// background: #FFF;
+// box-shadow: 0px 4px 4px 0px var(--Schemes-Outline-Variant, #CAC4D0);"
+        >
+          +
+        </div>
       </div>
 
       <div className="w-[355px] h-[48px] fixed bottom-0 border-t-[1px] border-t-[#E9E9F1] flex justify-between items-center px-4">

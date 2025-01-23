@@ -5,6 +5,7 @@ import { Coordinates, markerData, NaverMap } from "@/app/types/map";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { guGeojson } from "../lib/seoulGeojson";
 import { focusedMarker, generalMarker } from "../lib/custom-map-marker";
+import { reload, zoomIn, zoomOut } from "../lib/custom-map-control";
 
 const MAP_ID = "naver-map";
 
@@ -30,13 +31,45 @@ export default function Map({
       zoom: 15,
       scaleControl: true,
       mapDataControl: false,
-      zoomControl: true,
-      zoomControlOptions: {
-        position: naver.maps.Position.TOP_RIGHT,
-        style: naver.maps.ZoomControlStyle.SMALL,
-      },
     };
     const map = new naver.maps.Map(MAP_ID, mapOptions);
+
+    const customControlZoomIn = new naver.maps.CustomControl(zoomIn, {
+      position: naver.maps.Position.TOP_RIGHT,
+    });
+
+    const customControlZoomOut = new naver.maps.CustomControl(zoomOut, {
+      position: naver.maps.Position.TOP_RIGHT,
+    });
+
+    const customControlReload = new naver.maps.CustomControl(reload, {
+      position: naver.maps.Position.TOP_RIGHT,
+    });
+
+    naver.maps.Event.once(map, "init", function () {
+      customControlZoomIn.setMap(map);
+      customControlZoomOut.setMap(map);
+      customControlReload.setMap(map);
+
+      naver.maps.Event.addDOMListener(
+        customControlZoomIn.getElement(),
+        "click",
+        function () {
+          const currentZoomLevel = map.getZoom();
+          map.setZoom(currentZoomLevel + 3, true);
+        }
+      );
+
+      naver.maps.Event.addDOMListener(
+        customControlZoomOut.getElement(),
+        "click",
+        function () {
+          const currentZoomLevel = map.getZoom();
+          map.setZoom(currentZoomLevel - 3, true);
+        }
+      );
+    });
+
     mapRef.current = map;
 
     naver.maps.Event.once(map, "init", () => {
