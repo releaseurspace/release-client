@@ -57,7 +57,7 @@ export default function PropertyList({
                 backgroundImage: 'url("/select-triangle.svg")',
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "calc(100% - 10px) center",
-                backgroundSize: "12px",
+                backgroundSize: "10px",
               }}
               className="text-xs text-[#2D125F] bg-[#F1F1FF] border-2 border-[#CABBE6] rounded-full px-[10px] w-[72px] h-[24px] appearance-none cursor-pointer outline-none"
             >
@@ -107,7 +107,14 @@ export default function PropertyList({
                 <div>
                   <div className="text-xs text-[#6B6B6B]">
                     {Math.floor(property.size / 3.3)}평 / {property.floor} /{" "}
-                    {property.nearest_station} {property.distance_to_station}
+                    {property.nearest_station?.length +
+                      property.distance_to_station?.length >
+                    10
+                      ? (
+                          property.nearest_station +
+                          property.distance_to_station
+                        ).slice(0, 10) + "..."
+                      : property.nearest_station + " " + property.distance_to_station}
                   </div>
                   <div className="text-xs text-[#6B6B6B]">
                     {property.description.length > 20
@@ -131,9 +138,9 @@ export default function PropertyList({
       >
         <PropertyDetail
           setFocusedPropertyId={setFocusedPropertyId}
-          property={
-            properties.find((property) => property.id === focusedPropertyId)
-          }
+          property={properties.find(
+            (property) => property.id === focusedPropertyId
+          )}
         />
       </motion.div>
     </>

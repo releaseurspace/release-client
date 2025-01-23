@@ -1,6 +1,5 @@
 "use client";
 
-import MapContainer from "@/app/components/MapContainer";
 import NavBar from "@/app/components/NavBar";
 import Image from "next/image";
 import { useActionState, useEffect, useState } from "react";
@@ -10,6 +9,8 @@ import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
 import AutoScrollDiv from "@/app/components/AutoScrollDiv";
+import Map from "@/app/components/Map";
+import { Coordinates } from "@/app/types/map";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -27,6 +28,22 @@ export default function Home() {
 
   const [username, setUsername] = useState<string>("");
 
+  const [loc, setLoc] = useState<Coordinates>([126.9783882, 37.5666103]);
+  
+    const initLocation = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLoc([position.coords.longitude, position.coords.latitude]);
+        },
+        () => {
+          setLoc([126.9783882, 37.5666103]);
+        }
+      );
+    };
+    useEffect(() => {
+      initLocation();
+    }, []);
+
   function chatbotSumbit() {
     const formData = new FormData();
     formData.append("question", questionInput);
@@ -41,6 +58,7 @@ export default function Home() {
     }
     if (state?.properties) {
       setProperties(state?.properties);
+      setFocusedPropertyId(null);
     }
   }, [state]);
 
@@ -72,7 +90,8 @@ export default function Home() {
         />
 
         <div className="w-full h-full">
-          <MapContainer
+          <Map
+          loc={loc}
             markerData={properties.map((property) => {
               return {
                 id: property.id,

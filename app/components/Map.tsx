@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { Coordinates, markerData, NaverMap } from "@/app/types/map";
+import { Coordinates, markerData } from "@/app/types/map";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { guGeojson } from "../lib/seoulGeojson";
 import { focusedMarker, generalMarker } from "../lib/custom-map-marker";
@@ -22,11 +22,12 @@ export default function Map({
   focusedPropertyId: number | null;
   setFocusedPropertyId: Dispatch<SetStateAction<number | null>>;
 }) {
-  const mapRef = useRef<NaverMap | undefined>(undefined);
+  const mapRef = useRef<naver.maps.Map | undefined>(undefined);
+  const markersRef = useRef<naver.maps.Marker[]>([]);
 
   useEffect(() => {
     const mapOptions = {
-      center: new window.naver.maps.LatLng(loc),
+      center: new window.naver.maps.LatLng(loc!),
       minZoom: 6,
       zoom: 15,
       scaleControl: true,
@@ -49,14 +50,14 @@ export default function Map({
     naver.maps.Event.once(map, "init", function () {
       customControlZoomIn.setMap(map);
       customControlZoomOut.setMap(map);
-      customControlReload.setMap(map);
+      customControlReload.setMap(mapRef.current);
 
       naver.maps.Event.addDOMListener(
         customControlZoomIn.getElement(),
         "click",
         function () {
           const currentZoomLevel = map.getZoom();
-          map.setZoom(currentZoomLevel + 3, true);
+          map.setZoom(currentZoomLevel + 2, true);
         }
       );
 
@@ -65,12 +66,10 @@ export default function Map({
         "click",
         function () {
           const currentZoomLevel = map.getZoom();
-          map.setZoom(currentZoomLevel - 3, true);
+          map.setZoom(currentZoomLevel - 2, true);
         }
       );
     });
-
-    mapRef.current = map;
 
     naver.maps.Event.once(map, "init", () => {
       const regionGeoJson = JSON.parse(guGeojson);
@@ -141,33 +140,44 @@ export default function Map({
         // map.data.revertStyle();
       });
     });
-  }, [loc]);
 
-  const markersRef = useRef<naver.maps.Marker[]>([]);
+    mapRef.current = map;
+  }, [loc]);
 
   useEffect(() => {
     if (mapRef.current && markerData.length > 0) {
       markersRef.current.forEach((marker) => marker.setMap(null));
       markersRef.current = [];
 
+      const total = markerData.reduce(
+        (acc, marker) => {
+          acc.latSum += marker.lat;
+          acc.lngSum += marker.lng;
+          return acc;
+        },
+        { latSum: 0, lngSum: 0 }
+      );
+
+      const locAverage = {
+        lng: total.lngSum / markerData.length,
+        lat: total.latSum / markerData.length,
+      };
+
       if (!focusedPropertyId) {
-        const total = markerData.reduce(
-          (acc, marker) => {
-            acc.latSum += marker.lat;
-            acc.lngSum += marker.lng - 0.015;
-            return acc;
-          },
-          { latSum: 0, lngSum: 0 }
-        );
-
-        const locAverage = [
-          total.lngSum / markerData.length,
-          total.latSum / markerData.length,
-        ] as Coordinates;
-
         mapRef.current.setOptions({
           zoom: 13.5,
-          center: new window.naver.maps.LatLng(locAverage),
+          center: new window.naver.maps.LatLng([
+            locAverage.lng - 0.015,
+            locAverage.lat,
+          ]),
+        });
+      } else {
+        mapRef.current.setOptions({
+          zoom: 13,
+          center: new window.naver.maps.LatLng([
+            locAverage.lng - 0.06,
+            locAverage.lat,
+          ]),
         });
       }
 
@@ -186,6 +196,9 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
+          mapRef.current?.setCenter(
+            new naver.maps.LatLng(spot.lat, spot.lng - 0.03)
+          );
         });
 
         return marker;
