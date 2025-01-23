@@ -4,7 +4,6 @@ import Script from "next/script";
 import { Coordinates, markerData, NaverMap } from "@/app/types/map";
 import { useEffect, useRef } from "react";
 import CustomMapMarker from "../lib/custom-map-marker";
-import formatMapPrice from "../util/format-price";
 import { guGeojson } from "../lib/seoulGeojson";
 
 const MAP_ID = "naver-map";
@@ -98,7 +97,7 @@ export default function Map({
         });
       });
 
-      map.data.addListener("mouseout", function (e) {
+      map.data.addListener("mouseout", function (e) {  //eslint-disable-line
         tooltip.hide().empty();
         // map.data.revertStyle();
       });
