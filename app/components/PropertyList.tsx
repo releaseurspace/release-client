@@ -118,23 +118,34 @@ export default function PropertyList({
                 className="absolute top-[90px] left-[90px]"
               />
               <div className="w-full space-y-[3px]">
-                <div className="space-y-[2px]">
-                  <div className="text-xs text-[#121212]">
-                    {property.purpose}
-                  </div>
-                  <div className="text-base font-bold text-[#5E3AA1]">
+                <div className="space-y-[2px] *:text-[#121212]">
+                  <div className="text-xs font-medium">{property.purpose}</div>
+                  <div className="text-base font-bold">
                     월세 {property.deposit}만/
                     {property.monthly_rent}만
                   </div>
-                  <div className="text-xs font-bold text-[#121212]">
+                  <div className="text-xs font-bold">
                     권리금 {property.key_money}만 / 관리비{" "}
                     {property.maintenance_fee}만
                   </div>
                 </div>
-                <hr />
-                <div>
-                  <div className="text-xs text-[#6B6B6B]">
-                    {Math.floor(property.size / 3.3)}평 / {property.floor} /{" "}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="195"
+                  height="2"
+                  viewBox="0 0 195 2"
+                  fill="none"
+                >
+                  <path
+                    d="M1.15625 0.584961H194.156"
+                    stroke="#BABABA"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="*:text-xs *:font-medium *:text-[#505050]">
+                  <div>
+                    {property.size + "평 / "}
+                    {property.floor + " / "}
                     {property.nearest_station?.length +
                       property.distance_to_station?.length >
                     10
@@ -146,11 +157,7 @@ export default function PropertyList({
                         " " +
                         property.distance_to_station}
                   </div>
-                  <div className="text-xs text-[#6B6B6B]">
-                    {property.description.length > 20
-                      ? property.description.slice(0, 20) + "..."
-                      : property.description}
-                  </div>
+                  <div>{property.purpose + " 추천"}</div>
                 </div>
               </div>
             </div>

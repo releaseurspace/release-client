@@ -33,7 +33,7 @@ export default function NavBar() {
         </div>
       </div>
       <div className="flex flex-row items-center gap-4">
-        <button className="text-sm rounded-full font-bold h-10 w-[95px] border-2 border-[#5E3AA1]">
+        <button className="text-white text-sm rounded-full font-bold h-9 w-[95px] bg-[#5E3AA1]">
           호스트 모드
         </button>
         <Image src="/profile.svg" width={40} height={40} alt="profile" className="cursor-pointer" />
