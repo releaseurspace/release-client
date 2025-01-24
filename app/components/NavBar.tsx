@@ -2,10 +2,14 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function NavBar() {
   const router = useRouter();
   const pathname = usePathname();
+
+  const [profileHovered, setProfileHovered] = useState<boolean>(false);
+
   return (
     <div className="z-50 w-full h-[56px] bg-white flex flex-row justify-between items-center px-5 py-3 shadow-md fixed top-0">
       <div className="flex flex-row items-center">
@@ -36,7 +40,15 @@ export default function NavBar() {
         <button className="text-white text-sm rounded-full font-bold h-9 w-[95px] bg-[#5E3AA1]">
           호스트 모드
         </button>
-        <Image src="/profile.svg" width={40} height={40} alt="profile" className="cursor-pointer" />
+        <Image
+          src={profileHovered ? "/profile-purple.svg" : "/profile-gray.svg"}
+          width={40}
+          height={40}
+          alt="profile"
+          className="cursor-pointer"
+          onMouseOver={() => setProfileHovered(true)}
+          onMouseOut={() => setProfileHovered(false)}
+        />
       </div>
     </div>
   );
