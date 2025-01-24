@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { Coordinates, markerData } from "@/app/types/map";
+import { markerData } from "@/app/types/map";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { guGeojson } from "../lib/seoulGeojson";
 import { focusedMarker, generalMarker } from "../lib/custom-map-marker";
@@ -10,13 +10,11 @@ import { reload, zoomIn, zoomOut } from "../lib/custom-map-control";
 const MAP_ID = "naver-map";
 
 export default function Map({
-  loc,
   markerData,
   setShowPropertyList,
   focusedPropertyId,
   setFocusedPropertyId,
 }: {
-  loc: Coordinates;
   markerData: markerData[];
   setShowPropertyList: Dispatch<SetStateAction<boolean>>;
   focusedPropertyId: number | null;
@@ -27,9 +25,9 @@ export default function Map({
 
   useEffect(() => {
     const mapOptions = {
-      center: new window.naver.maps.LatLng(loc!),
+      center: new window.naver.maps.LatLng([126.9882, 37.5412]),
       minZoom: 6,
-      zoom: 15,
+      zoom: 12,
       scaleControl: true,
       mapDataControl: false,
     };
@@ -142,7 +140,7 @@ export default function Map({
     });
 
     mapRef.current = map;
-  }, [loc]);
+  }, []);
 
   useEffect(() => {
     if (mapRef.current && markerData.length > 0) {

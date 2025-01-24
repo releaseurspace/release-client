@@ -10,10 +10,11 @@ export default function PropertyDetail({
   setFocusedPropertyId: Dispatch<SetStateAction<number | null>>;
 }) {
   const [selectedTapId, setSelectedTapId] = useState<number>(0);
+  const [liked, setLiked] = useState<boolean>(false);
 
   return (
     <>
-      <div className="w-full h-[51px] border-b-[1px] border-b-[#E9E9F1] bg-white flex justify-between flex-row px-3 sticky top-0">
+      <div className="w-full h-[51px] border-b-[1px] border-b-[#E9E9F1] bg-white flex justify-between flex-row px-3 sticky top-0 z-50">
         <Image
           src="/arrow-left.svg"
           width={24}
@@ -41,25 +42,30 @@ export default function PropertyDetail({
           />
         </div>
 
-        <div className="w-full h-[106px] py-[17px] pl-[9px]">
-          <div className="text-[15px] font-medium text-[#121212] flex flex-row justify-between">
-            {property?.purpose}
-            <span className="pr-5 text-xs font-medium flex flex-row items-center">
+        <div className="w-full py-[12px] px-[13px]">
+          <div className="text-[16px] font-bold text-[#121212] flex flex-row justify-between">
+            [일반상가] {property?.nearest_station} · {property?.purpose}
+            <span className="pr-1 text-xs font-medium flex flex-row items-center">
               <Image src="/view.svg" width={20} height={20} alt="views" />
               162
             </span>
           </div>
-          <div className="text-[20px] font-bold text-[#5E3AA1] mt-1">
-            월세 {property?.deposit}만/
-            {property?.monthly_rent}만
+          <div className="text-[14px] font-normal text-[#121212]">
+            {property?.description}
           </div>
-          <div className="font-bold text-[#121212]">
-            권리금 {property?.key_money}만 / 관리비 {property?.maintenance_fee}
-            만
+          <div className="flex flex-row gap-2 mt-3">
+            {["#역세권", "#직장인", "#넓은평수"].map((tag, idx) => (
+              <div
+                key={idx}
+                className="text-[#5E3AA1] text-xs font-medium bg-[#F1F1FF] py-1 px-2 rounded-full"
+              >
+                {tag}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="w-full h-[48px] flex flex-row *:flex-1 *:text-center *:content-center *:cursor-pointer border-b-[1px] border-b-[#E9E9F1] relative">
+        <div className="w-full h-[48px] flex flex-row *:flex-1 *:font-medium *:text-center *:content-center *:cursor-pointer border-b-[1px] border-b-[#E9E9F1] relative">
           <div
             style={{ color: selectedTapId === 0 ? "#121212" : "#6B6B6B" }}
             onClick={() => setSelectedTapId(0)}
@@ -190,7 +196,7 @@ export default function PropertyDetail({
         <div className="w-full">
           {selectedTapId === 1 ? (
             <>
-              <div className="h-[40px] text-[#5E3AA1] bg-[#F1F1FF] flex flex-row items-center justify-center gap-2 cursor-pointer">
+              <div className="h-[40px] text-[#5E3AA1] text-base font-semibold bg-[#F1F1FF] flex flex-row items-center justify-center gap-2 cursor-pointer">
                 상권 정보 더보기
                 <Image
                   src="/arrow-top-right-purple.svg"
@@ -200,7 +206,7 @@ export default function PropertyDetail({
                 />
               </div>
 
-              <div className="*:text-[#121212] px-5 py-4 flex flex-col justify-center">
+              <div className="*:text-[#121212] px-5 pt-4 flex flex-col justify-center">
                 <div className="font-normal flex justify-between">
                   유동인구 <span className="font-semibold">5000명</span>
                 </div>
@@ -233,6 +239,15 @@ export default function PropertyDetail({
                 </div>
               </div>
 
+              <div className="w-full h-[60px] text-[#505050] text-[12px] font-normal flex items-center justify-center">
+                해당 상권 정보는 매물 기준 반경 500m 내 데이터입니다.
+              </div>
+              <div
+                style={{ boxShadow: "0px -1px 4px 0px #D9D9D9" }}
+                className="text-base font-semibold text-[#121212] p-[10px]"
+              >
+                주변 경쟁 업체
+              </div>
               <div>
                 <Image
                   src="/example-map-photo.svg"
@@ -246,8 +261,8 @@ export default function PropertyDetail({
         </div>
         <div className="w-full">
           {selectedTapId === 2 ? (
-            <>
-              <div className="pt-6 px-5">
+            <div className="*:px-5">
+              <div className="py-6">
                 <Image
                   src="/example-real-estate-agent.svg"
                   width={315}
@@ -255,14 +270,52 @@ export default function PropertyDetail({
                   alt="agent"
                 />
               </div>
-            </>
+              <div className="text-base font-semibold text-[#121212]">
+                다른 매물 둘러보기
+              </div>
+              <div className="flex flex-row *:flex-shrink-0 gap-[15px] overflow-x-scroll scrollbar-hide">
+                {[1, 1, 1, 1, 1, 1, 1].map((item, idx) => (
+                  <div key={idx} className="py-2 text-[#121212] w-[115px]">
+                    <Image
+                      src="/example-property-thumbnail.svg"
+                      width={115}
+                      height={115}
+                      alt="property thumbnail"
+                      className="rounded-xl"
+                    />
+                    <div className="text-[6px] font-medium">일식집</div>
+                    <div className="text-xs font-bold ">
+                      월세 5000만/ 400만
+                    </div>
+                    <div className="text-[8px] font-bold">
+                      권리금 4천 / 관리비 50만
+                    </div>
+                    <hr />
+                    <div className="text-[#505050] text-[6px] font-medium">34평 / 5층 / 학동역 도보 5분</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : null}
         </div>
       </div>
 
       <div className="w-[355px] h-[51px] fixed bottom-0 bg-white border-t-[1px] border-t-[#E9E9F1] flex justify-between items-center px-4">
-        <Image src="/btn-like.svg" width={36} height={36} alt="like" />
-        <button className="w-[169px] h-[35px] bg-[#5E3AA1] rounded-full text-white font-semibold">
+        <Image
+          src={liked ? "/btn-like-clicked.svg" : "/btn-like-unclicked.svg"}
+          width={36}
+          height={36}
+          alt="like"
+          className="cursor-pointer transition"
+          onClick={() => {
+            if (liked) {
+              setLiked(false);
+              return;
+            }
+            setLiked(true);
+          }}
+        />
+        <button className="w-[133px] h-[35px] bg-[#885AFF] rounded-full text-white font-semibold cursor-pointer">
           문의하기
         </button>
       </div>

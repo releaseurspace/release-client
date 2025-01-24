@@ -10,7 +10,6 @@ import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
 import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 import Map from "@/app/components/Map";
-import { Coordinates } from "@/app/types/map";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -28,21 +27,6 @@ export default function Home() {
 
   const [username, setUsername] = useState<string>("");
 
-  const [loc, setLoc] = useState<Coordinates>([126.9783882, 37.5666103]);
-  
-    const initLocation = () => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLoc([position.coords.longitude, position.coords.latitude]);
-        },
-        () => {
-          setLoc([126.9783882, 37.5666103]);
-        }
-      );
-    };
-    useEffect(() => {
-      initLocation();
-    }, []);
 
   function chatbotSumbit() {
     const formData = new FormData();
@@ -74,8 +58,8 @@ export default function Home() {
           >
             <Image
               src="/btn-sidebar.svg"
-              width={30.8}
-              height={28}
+              width={22}
+              height={26}
               alt="ai chatbot"
             />
           </div>
@@ -91,7 +75,6 @@ export default function Home() {
 
         <div className="w-full h-full">
           <Map
-          loc={loc}
             markerData={properties.map((property) => {
               return {
                 id: property.id,

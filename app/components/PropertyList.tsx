@@ -73,6 +73,7 @@ export default function PropertyList({
           {properties.map((property, idx) => (
             <div
               key={idx}
+              style={{ backgroundColor: idx < 3 ? "#F1F1FF" : "#FFF" }}
               className="h-[129px] w-full flex flex-row py-4 px-5 gap-5 cursor-pointer relative"
               onClick={() => setFocusedPropertyId(property.id)}
             >
@@ -82,6 +83,33 @@ export default function PropertyList({
                 height={100}
                 alt="thumbnail"
               />
+              {idx === 0 ? (
+                <Image
+                  src="/mini-marker-first.svg"
+                  width={24}
+                  height={28.67}
+                  alt="first-recommend"
+                  className="absolute top-6 left-7"
+                />
+              ) : null}
+              {idx === 1 ? (
+                <Image
+                  src="/mini-marker-second.svg"
+                  width={24}
+                  height={28.67}
+                  alt="first-recommend"
+                  className="absolute top-6 left-7"
+                />
+              ) : null}
+              {idx === 2 ? (
+                <Image
+                  src="/mini-marker-third.svg"
+                  width={24}
+                  height={28.67}
+                  alt="first-recommend"
+                  className="absolute top-6 left-7"
+                />
+              ) : null}
               <Image
                 src="/btn-heart-outline.svg"
                 width={19.6}
@@ -114,7 +142,9 @@ export default function PropertyList({
                           property.nearest_station +
                           property.distance_to_station
                         ).slice(0, 10) + "..."
-                      : property.nearest_station + " " + property.distance_to_station}
+                      : property.nearest_station +
+                        " " +
+                        property.distance_to_station}
                   </div>
                   <div className="text-xs text-[#6B6B6B]">
                     {property.description.length > 20
