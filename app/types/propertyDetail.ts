@@ -1,0 +1,24 @@
+export type PropertyDetails = {
+  id: number;
+  latitude: string;
+  longitude: string;
+  purpose: string;
+  deposit: number;
+  monthly_rent: number;
+  key_money: number;
+  maintenance_fee: number;
+  size_sqm: number;
+  size: number;
+  description: string;
+  floor: string;
+  nearest_station: string;
+  distance_to_station: string;
+  agent_comment: string;
+  rental_status: string;
+  available_date: string;
+  parking_info: string;
+  heating_type: string;
+  direction: string;
+  property_registry: string;
+  bathroom_info: string;
+};

@@ -1,16 +1,38 @@
 import Image from "next/image";
-import { Dispatch, SetStateAction, useState } from "react";
-import { Property } from "../types/property";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import callAPI from "../util/call-api";
+import { PropertyDetails } from "../types/propertyDetail";
 
 export default function PropertyDetail({
-  property,
+  focusedPropertyId,
   setFocusedPropertyId,
 }: {
-  property: Property | undefined;
+  focusedPropertyId: number | null;
   setFocusedPropertyId: Dispatch<SetStateAction<number | null>>;
 }) {
   const [selectedTapId, setSelectedTapId] = useState<number>(0);
   const [liked, setLiked] = useState<boolean>(false);
+  const [propertyDetail, setPropertyDetail] = useState<PropertyDetails | null>(
+    null
+  );
+
+  useEffect(() => {
+    async function getPropertyDetail() {
+      const res = await (
+        await callAPI({
+          url:
+            process.env.NEXT_PUBLIC_SERVER_URL +
+            "/property/" +
+            focusedPropertyId,
+          method: "GET",
+          isPrivate: false,
+        })
+      ).json();
+
+      setPropertyDetail(res);
+    }
+    getPropertyDetail();
+  }, [focusedPropertyId]);
 
   return (
     <>
@@ -44,14 +66,14 @@ export default function PropertyDetail({
 
         <div className="w-full py-[12px] px-[13px]">
           <div className="text-[16px] font-bold text-[#121212] flex flex-row justify-between">
-            [일반상가] {property?.nearest_station} · {property?.purpose}
+            [일반상가] {propertyDetail?.nearest_station} · {propertyDetail?.purpose}
             <span className="pr-1 text-xs font-medium flex flex-row items-center">
               <Image src="/view.svg" width={20} height={20} alt="views" />
               162
             </span>
           </div>
           <div className="text-[14px] font-normal text-[#121212]">
-            {property?.description}
+            {propertyDetail?.description}
           </div>
           <div className="flex flex-row gap-2 mt-3">
             {["#역세권", "#직장인", "#넓은평수"].map((tag, idx) => (
@@ -99,22 +121,22 @@ export default function PropertyDetail({
               <div className="*:text-[#121212] px-5 py-4 flex flex-col justify-center">
                 <div className="font-normal flex justify-between">
                   보증금{" "}
-                  <span className="font-semibold">{property?.deposit}</span>
+                  <span className="font-semibold">{propertyDetail?.deposit}</span>
                 </div>
                 <div className="font-normal flex justify-between">
                   권리금{" "}
-                  <span className="font-semibold">{property?.key_money}</span>
+                  <span className="font-semibold">{propertyDetail?.key_money}</span>
                 </div>
                 <div className="font-normal flex justify-between">
                   월세{" "}
                   <span className="font-semibold">
-                    {property?.monthly_rent}
+                    {propertyDetail?.monthly_rent}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   관리비{" "}
                   <span className="font-semibold">
-                    {property?.maintenance_fee}
+                    {propertyDetail?.maintenance_fee}
                   </span>
                 </div>
               </div>
@@ -123,28 +145,28 @@ export default function PropertyDetail({
                 <div className="px-5 py-4 bg-[#EEEEEE] flex flex-col justify-center">
                   <div className="font-normal flex justify-between">
                     전용 면적{" "}
-                    <span className="font-semibold">{property?.deposit}</span>
+                    <span className="font-semibold">{propertyDetail?.deposit}</span>
                   </div>
                   <div className="font-normal flex justify-between">
                     계약 면적{" "}
-                    <span className="font-semibold">{property?.key_money}</span>
+                    <span className="font-semibold">{propertyDetail?.key_money}</span>
                   </div>
                   <div className="font-normal flex justify-between">
                     층수{" "}
                     <span className="font-semibold">
-                      {property?.monthly_rent}
+                      {propertyDetail?.monthly_rent}
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
                     주변 지하철 역{" "}
                     <span className="font-semibold">
-                      {property?.maintenance_fee}
+                      {propertyDetail?.maintenance_fee}
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
                     추천 업종{" "}
                     <span className="font-semibold">
-                      {property?.maintenance_fee}
+                      {propertyDetail?.maintenance_fee}
                     </span>
                   </div>
                 </div>
@@ -216,25 +238,25 @@ export default function PropertyDetail({
                 <div className="font-normal flex justify-between">
                   직장 인구{" "}
                   <span className="font-semibold">
-                    {property?.monthly_rent}
+                    {propertyDetail?.monthly_rent}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   같은 업종{" "}
                   <span className="font-semibold">
-                    {property?.maintenance_fee}
+                    {propertyDetail?.maintenance_fee}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   평균 권리금{" "}
                   <span className="font-semibold">
-                    {property?.maintenance_fee}
+                    {propertyDetail?.maintenance_fee}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   평균 평수{" "}
                   <span className="font-semibold">
-                    {property?.maintenance_fee}
+                    {propertyDetail?.maintenance_fee}
                   </span>
                 </div>
               </div>
@@ -284,14 +306,14 @@ export default function PropertyDetail({
                       className="rounded-xl"
                     />
                     <div className="text-[6px] font-medium">일식집</div>
-                    <div className="text-xs font-bold ">
-                      월세 5000만/ 400만
-                    </div>
+                    <div className="text-xs font-bold ">월세 5000만/ 400만</div>
                     <div className="text-[8px] font-bold">
                       권리금 4천 / 관리비 50만
                     </div>
                     <hr />
-                    <div className="text-[#505050] text-[6px] font-medium">34평 / 5층 / 학동역 도보 5분</div>
+                    <div className="text-[#505050] text-[6px] font-medium">
+                      34평 / 5층 / 학동역 도보 5분
+                    </div>
                   </div>
                 ))}
               </div>

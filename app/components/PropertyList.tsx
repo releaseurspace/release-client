@@ -167,10 +167,8 @@ export default function PropertyList({
         variants={variants}
       >
         <PropertyDetail
+          focusedPropertyId={focusedPropertyId}
           setFocusedPropertyId={setFocusedPropertyId}
-          property={properties.find(
-            (property) => property.id === focusedPropertyId
-          )}
         />
       </motion.div>
     </>
