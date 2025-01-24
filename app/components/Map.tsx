@@ -4,17 +4,29 @@ import Script from "next/script";
 import { markerData } from "@/app/types/map";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { guGeojson } from "../lib/seoulGeojson";
-import { focusedMarker, generalMarker } from "../lib/custom-map-marker";
 import { reload, zoomIn, zoomOut } from "../lib/custom-map-control";
+import {
+  firstFocusedMarker,
+  firstUnfocusedMarker,
+  generalFocusedMarker,
+  generalUnfocusedMarker,
+  secondFocusedMarker,
+  secondUnfocusedMarker,
+  thirdFocusedMarker,
+  thirdUnfocusedMarker,
+} from "../lib/custom-map-marker";
+import { threePropertyIds } from "../types/topThreePropertyIds";
 
 const MAP_ID = "naver-map";
 
 export default function Map({
+  threePropertyIds,
   markerData,
   setShowPropertyList,
   focusedPropertyId,
   setFocusedPropertyId,
 }: {
+  threePropertyIds: threePropertyIds | undefined;
   markerData: markerData[];
   setShowPropertyList: Dispatch<SetStateAction<boolean>>;
   focusedPropertyId: number | null;
@@ -181,13 +193,36 @@ export default function Map({
 
       const newMarkers = markerData.map((spot) => {
         const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
+
+        let icon;
+        if (spot.id === focusedPropertyId) {
+          if (spot.id === threePropertyIds?.[1]) {
+            icon = firstFocusedMarker;
+          } else if (spot.id === threePropertyIds?.[2]) {
+            icon = secondFocusedMarker;
+          } else if (spot.id === threePropertyIds?.[3]) {
+            icon = thirdFocusedMarker;
+          } else {
+            icon = generalFocusedMarker;
+          }
+        } else {
+          if (spot.id === threePropertyIds?.[1]) {
+            icon = firstUnfocusedMarker;
+          } else if (spot.id === threePropertyIds?.[2]) {
+            icon = secondUnfocusedMarker;
+          } else if (spot.id === threePropertyIds?.[3]) {
+            icon = thirdUnfocusedMarker;
+          } else {
+            icon = generalUnfocusedMarker;
+          }
+        }
+
         const marker = new naver.maps.Marker({
           position: latlng,
           map: mapRef.current,
           clickable: true,
           icon: {
-            content:
-              spot.id === focusedPropertyId ? focusedMarker : generalMarker,
+            content: icon,
           },
         });
 
@@ -205,6 +240,7 @@ export default function Map({
       markersRef.current = newMarkers;
     }
   }, [
+    threePropertyIds,
     markerData,
     focusedPropertyId,
     setShowPropertyList,

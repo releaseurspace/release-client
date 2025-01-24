@@ -10,6 +10,7 @@ import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
 import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 import Map from "@/app/components/Map";
+import { threePropertyIds } from "@/app/types/topThreePropertyIds";
 
 export default function Home() {
   const [state, dispatch, isPending] = useActionState(ask, null);
@@ -19,6 +20,7 @@ export default function Home() {
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
+  const [threePropertyIds, setThreePropertyIds] = useState<threePropertyIds>();
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
   const [focusedPropertyId, setFocusedPropertyId] = useState<number | null>(
@@ -26,7 +28,6 @@ export default function Home() {
   );
 
   const [username, setUsername] = useState<string>("");
-
 
   function chatbotSumbit() {
     const formData = new FormData();
@@ -43,6 +44,13 @@ export default function Home() {
     if (state?.properties) {
       setProperties(state?.properties);
       setFocusedPropertyId(null);
+
+      const top3 = {} as threePropertyIds;
+      top3[1] = state?.properties[0]?.id;
+      top3[2] = state?.properties[1]?.id;
+      top3[3] = state?.properties[2]?.id;
+
+      setThreePropertyIds(top3);
     }
   }, [state]);
 
@@ -75,6 +83,7 @@ export default function Home() {
 
         <div className="w-full h-full">
           <Map
+            threePropertyIds={threePropertyIds}
             markerData={properties.map((property) => {
               return {
                 id: property.id,
