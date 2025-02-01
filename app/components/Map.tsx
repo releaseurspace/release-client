@@ -229,9 +229,6 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
-          mapRef.current?.setCenter(
-            new naver.maps.LatLng(spot.lat, spot.lng - 0.03)
-          );
         });
 
         return marker;

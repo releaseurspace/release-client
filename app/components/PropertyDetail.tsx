@@ -32,6 +32,9 @@ export default function PropertyDetail({
       setPropertyDetail(res);
     }
     getPropertyDetail();
+
+    document.getElementById("detail")?.scrollTo({ top: 0 });
+    setSelectedTapId(0);
   }, [focusedPropertyId]);
 
   return (
@@ -54,7 +57,7 @@ export default function PropertyDetail({
         />
       </div>
 
-      <div className="w-full overflow-y-scroll pb-[106px]">
+      <div id="detail" className="w-full h-full overflow-y-auto pb-[106px]">
         <div>
           <Image
             src="example-property-detail.svg"
