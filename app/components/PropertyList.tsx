@@ -165,19 +165,21 @@ export default function PropertyList({
         </div>
       </motion.div>
 
-      <motion.div
-        className="w-[355px] bg-white h-full overflow-y-scroll fixed left-[355px] z-10 scrollbar-hide border-l-[1px] border-l-[#E9E9F1]"
-        initial="hidden"
-        animate={focusedPropertyId ? "visible" : "hidden"}
-        hidden={!focusedPropertyId}
-        transition={{ duration: 0.5 }}
-        variants={variants}
-      >
-        <PropertyDetail
-          focusedPropertyId={focusedPropertyId}
-          setFocusedPropertyId={setFocusedPropertyId}
-        />
-      </motion.div>
+      {focusedPropertyId ? (
+        <motion.div
+          className="w-[355px] bg-white h-full overflow-y-scroll fixed left-[355px] z-10 scrollbar-hide border-l-[1px] border-l-[#E9E9F1]"
+          initial="hidden"
+          animate={focusedPropertyId ? "visible" : "hidden"}
+          hidden={!focusedPropertyId}
+          transition={{ duration: 0.5 }}
+          variants={variants}
+        >
+          <PropertyDetail
+            focusedPropertyId={focusedPropertyId}
+            setFocusedPropertyId={setFocusedPropertyId}
+          />
+        </motion.div>
+      ) : null}
     </>
   );
 }

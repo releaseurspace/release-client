@@ -18,23 +18,25 @@ export default function PropertyDetail({
 
   useEffect(() => {
     async function getPropertyDetail() {
-      const res = await (
-        await callAPI({
-          url:
-            process.env.NEXT_PUBLIC_SERVER_URL +
-            "/property/" +
-            focusedPropertyId,
-          method: "GET",
-          isPrivate: false,
-        })
-      ).json();
+      if (focusedPropertyId) {
+        const res = await (
+          await callAPI({
+            url:
+              process.env.NEXT_PUBLIC_SERVER_URL +
+              "/property/" +
+              focusedPropertyId,
+            method: "GET",
+            isPrivate: false,
+          })
+        ).json();
 
-      setPropertyDetail(res);
+        setPropertyDetail(res);
+
+        document.getElementById("detail")?.scrollTo({ top: 0 });
+        setSelectedTapId(0);
+      }
     }
     getPropertyDetail();
-
-    document.getElementById("detail")?.scrollTo({ top: 0 });
-    setSelectedTapId(0);
   }, [focusedPropertyId]);
 
   return (
