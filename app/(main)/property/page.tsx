@@ -39,8 +39,28 @@ export default function Home() {
       })
     ).json();
 
+  console.log(res)
+
     const answer = res.chatResponse;
-    const properties = res.properties.map((property: Property) => {
+    const mainProperties = res.mainProperties.map((property: Property) => {
+      return {
+        id: property.id,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        purpose: property.purpose,
+        deposit: property.deposit,
+        monthly_rent: property.monthly_rent,
+        key_money: property.key_money,
+        maintenance_fee: property.maintenance_fee,
+        size: property.size,
+        description: property.description,
+        floor: property.floor,
+        nearest_station: property.nearest_station,
+        distance_to_station: property.distance_to_station,
+      };
+    });
+    
+    const subProperties = res.subProperties.map((property: Property) => {
       return {
         id: property.id,
         latitude: property.latitude,
@@ -58,17 +78,19 @@ export default function Home() {
       };
     });
 
+
+
     if (answer) {
       setAnswers((prev) => [...prev, answer as string]);
     }
     if (properties) {
-      setProperties(properties);
+      setProperties([...mainProperties, ...subProperties]);
       setFocusedPropertyId(null);
 
       const top3 = {} as threePropertyIds;
-      top3[1] = properties[0]?.id;
-      top3[2] = properties[1]?.id;
-      top3[3] = properties[2]?.id;
+      top3[1] = mainProperties[0]?.id;
+      top3[2] = mainProperties[1]?.id;
+      top3[3] = mainProperties[2]?.id;
 
       setThreePropertyIds(top3);
     }
@@ -144,6 +166,7 @@ export default function Home() {
                         width={60}
                         height={60}
                         alt="loading..."
+                        className="rounded-b-3xl rounded-tr-3xl rounded-tl"
                       />
                     )}
                   </div>
@@ -187,7 +210,7 @@ export default function Home() {
                   setQuestionInput(e.target.value);
                 }}
                 onKeyDown={(e) => {
-                  if (e.nativeEvent.isComposing) return; 
+                  if (e.nativeEvent.isComposing) return;
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     chatbotSumbit();
