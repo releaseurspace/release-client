@@ -2,20 +2,16 @@
 
 import NavBar from "@/app/components/NavBar";
 import Image from "next/image";
-import { useActionState, useEffect, useState } from "react";
-import { ask } from "./actions";
+import { useState } from "react";
 import MultilineText from "@/app/components/MultilineText";
 import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
-import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 import Map from "@/app/components/Map";
 import { threePropertyIds } from "@/app/types/topThreePropertyIds";
+import callAPI from "@/app/util/call-api";
 
 export default function Home() {
-  const [state, dispatch, isPending] = useActionState(ask, null);
-
-  const [questionInput, setQuestionInput] = useState<string>("");
   const [promptLines, setPromptLines] = useState<number>(1);
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -28,31 +24,55 @@ export default function Home() {
   );
 
   const [username, setUsername] = useState<string>("");
+  const [questionInput, setQuestionInput] = useState<string>("");
 
-  function chatbotSumbit() {
-    const formData = new FormData();
-    formData.append("question", questionInput);
-    formData.append("username", username);
+  async function chatbotSumbit() {
+    const res = await (
+      await callAPI({
+        url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain",
+        method: "POST",
+        isPrivate: false,
+        body: {
+          userId: username,
+          content: questionInput,
+        },
+      })
+    ).json();
 
-    dispatch(formData);
-  }
+    const answer = res.chatResponse;
+    const properties = res.properties.map((property: Property) => {
+      return {
+        id: property.id,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        purpose: property.purpose,
+        deposit: property.deposit,
+        monthly_rent: property.monthly_rent,
+        key_money: property.key_money,
+        maintenance_fee: property.maintenance_fee,
+        size: property.size,
+        description: property.description,
+        floor: property.floor,
+        nearest_station: property.nearest_station,
+        distance_to_station: property.distance_to_station,
+      };
+    });
 
-  useEffect(() => {
-    if (state?.answer) {
-      setAnswers((prev) => [...prev, state?.answer as string]);
+    if (answer) {
+      setAnswers((prev) => [...prev, answer as string]);
     }
-    if (state?.properties) {
-      setProperties(state?.properties);
+    if (properties) {
+      setProperties(properties);
       setFocusedPropertyId(null);
 
       const top3 = {} as threePropertyIds;
-      top3[1] = state?.properties[0]?.id;
-      top3[2] = state?.properties[1]?.id;
-      top3[3] = state?.properties[2]?.id;
+      top3[1] = properties[0]?.id;
+      top3[2] = properties[1]?.id;
+      top3[3] = properties[2]?.id;
 
       setThreePropertyIds(top3);
     }
-  }, [state]);
+  }
 
   return (
     <div className="h-[100vh]">
@@ -102,35 +122,33 @@ export default function Home() {
         <div className="min-w-[432px] max-w-[432px] h-full flex flex-col px-4 pb-6">
           {questions.length || answers.length ? (
             <div className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide">
-              <AutoScrollDiv>
-                {questions.map((question, idx) => (
-                  <div key={idx}>
-                    <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
-                      <MultilineText text={question} />
-                    </div>
-                    <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
-                      <Image
-                        src="/logo-ai.svg"
-                        width={36}
-                        height={36}
-                        alt="ai chatbot"
-                      />
-                      {answers[idx] ? (
-                        <div className="bg-[#F4F4F4] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                          <TypingText text={answers[idx]} />
-                        </div>
-                      ) : (
-                        <Image
-                          src="/loading1.gif"
-                          width={60}
-                          height={60}
-                          alt="loading..."
-                        />
-                      )}
-                    </div>
+              {questions.map((question, idx) => (
+                <div key={idx}>
+                  <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
+                    <MultilineText text={question} />
                   </div>
-                ))}
-              </AutoScrollDiv>
+                  <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">
+                    <Image
+                      src="/logo-ai.svg"
+                      width={36}
+                      height={36}
+                      alt="ai chatbot"
+                    />
+                    {answers[idx] ? (
+                      <div className="bg-[#F4F4F4] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
+                        <TypingText text={answers[idx]} />
+                      </div>
+                    ) : (
+                      <Image
+                        src="/loading1.gif"
+                        width={60}
+                        height={60}
+                        alt="loading..."
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="h-full flex flex-col justify-center items-center">
@@ -160,44 +178,46 @@ export default function Home() {
 
           <div className="gap-1 flex flex-col">
             <div className="relative">
-              <form action={chatbotSumbit}>
-                <textarea
-                  placeholder="릴리스 AI 비서에게 물어보기"
-                  name="question"
-                  value={questionInput}
-                  onChange={(e) => {
-                    setPromptLines(e.target.value.split("\n").length);
-                    setQuestionInput(e.target.value);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      const submitButton = e.currentTarget
-                        .nextElementSibling as HTMLButtonElement;
-                      submitButton?.click();
-                    }
-                  }}
-                  style={{ height: 40 + (promptLines - 1) * 20 }}
-                  className={`bg-[#EFEFEF] w-full min-h-10 max-h-40 rounded-[24px] outline-none font-normal text-base pl-6 pr-12 py-2 resize-none overflow-y-scroll scrollbar-hide`}
-                ></textarea>
-                <button
-                  disabled={isPending || !questionInput.length}
-                  onClick={() => {
+              <textarea
+                placeholder="릴리스 AI 비서에게 물어보기"
+                name="question"
+                value={questionInput}
+                onChange={(e) => {
+                  setPromptLines(e.target.value.split("\n").length);
+                  setQuestionInput(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    chatbotSumbit();
                     setPromptLines(1);
                     setQuestions((prev) => [...prev, questionInput]);
                     setShowPropertyList(true);
                     setTimeout(() => setQuestionInput(""), 0.1);
-                  }}
-                >
-                  <Image
-                    src="/btn-textarea-submit.svg"
-                    width={32}
-                    height={32}
-                    alt="submit"
-                    className="absolute bottom-[10.5px] right-[5px] cursor-pointer"
-                  />
-                </button>
-              </form>
+                  }
+                }}
+                style={{ height: 40 + (promptLines - 1) * 20 }}
+                className={`bg-[#EFEFEF] w-full min-h-10 max-h-40 rounded-[24px] outline-none font-normal text-base pl-6 pr-12 py-2 resize-none overflow-y-scroll scrollbar-hide`}
+              ></textarea>
+              <button
+                disabled={!questionInput.length}
+                onClick={(e) => {
+                  e.preventDefault();
+                  chatbotSumbit();
+                  setPromptLines(1);
+                  setQuestions((prev) => [...prev, questionInput]);
+                  setShowPropertyList(true);
+                  setTimeout(() => setQuestionInput(""), 0.1);
+                }}
+              >
+                <Image
+                  src="/btn-textarea-submit.svg"
+                  width={32}
+                  height={32}
+                  alt="submit"
+                  className="absolute bottom-[10.5px] right-[5px] cursor-pointer"
+                />
+              </button>
             </div>
 
             <div className="text-xs text-[#645B75] text-center">
