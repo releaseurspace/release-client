@@ -39,8 +39,6 @@ export default function Home() {
       })
     ).json();
 
-  console.log(res)
-
     const answer = res.chatResponse;
     const mainProperties = res.mainProperties.map((property: Property) => {
       return {

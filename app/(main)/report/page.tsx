@@ -24,7 +24,6 @@ export default function Home() {
             }
           );
 
-          console.log("requested");
 
           console.log(res);
 

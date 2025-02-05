@@ -21,4 +21,6 @@ export type PropertyDetails = {
   direction: string;
   property_registry: string;
   bathroom_info: string;
+  building_info: string;
+  elevator_count: number;
 };

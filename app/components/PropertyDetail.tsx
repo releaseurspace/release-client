@@ -174,7 +174,7 @@ export default function PropertyDetail({
                   <div className="font-normal flex justify-between">
                     층수{" "}
                     <span className="font-semibold">
-                      {propertyDetail?.floor}
+                      {propertyDetail?.floor} / 총 {propertyDetail?.building_info.replace(/[^0-9]/g,"")} 층
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
@@ -336,7 +336,9 @@ export default function PropertyDetail({
                         <div className="text-[12px] font-normal">
                           엘리베이터
                         </div>
-                        <div className="text-[14px] font-semibold">1대</div>
+                        <div className="text-[14px] font-semibold">
+                          {propertyDetail?.elevator_count}대
+                        </div>
                       </div>
                     </div>
                     <div>
