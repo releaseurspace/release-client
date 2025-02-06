@@ -8,15 +8,14 @@ import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
 import Map from "@/app/components/Map";
-import { threePropertyIds } from "@/app/types/topThreePropertyIds";
 import callAPI from "@/app/util/call-api";
 
 export default function Home() {
   const [promptLines, setPromptLines] = useState<number>(1);
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [threePropertyIds, setThreePropertyIds] = useState<threePropertyIds>();
+  const [mainProperties, setMainProperties] = useState<Property[]>([]);
+  const [subProperties, setSubProperties] = useState<Property[]>([]);
 
   const [showPropertyList, setShowPropertyList] = useState<boolean>(true);
   const [focusedPropertyId, setFocusedPropertyId] = useState<number | null>(
@@ -40,25 +39,7 @@ export default function Home() {
     ).json();
 
     const answer = res.chatResponse;
-    const mainProperties = res.mainProperties.map((property: Property) => {
-      return {
-        id: property.id,
-        latitude: property.latitude,
-        longitude: property.longitude,
-        purpose: property.purpose,
-        deposit: property.deposit,
-        monthly_rent: property.monthly_rent,
-        key_money: property.key_money,
-        maintenance_fee: property.maintenance_fee,
-        size: property.size,
-        description: property.description,
-        floor: property.floor,
-        nearest_station: property.nearest_station,
-        distance_to_station: property.distance_to_station,
-      };
-    });
-    
-    const subProperties = res.subProperties.map((property: Property) => {
+    const mainPropertiesData = res.mainProperties.map((property: Property) => {
       return {
         id: property.id,
         latitude: property.latitude,
@@ -76,21 +57,31 @@ export default function Home() {
       };
     });
 
-
+    const subPropertiesData = res.subProperties.map((property: Property) => {
+      return {
+        id: property.id,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        purpose: property.purpose,
+        deposit: property.deposit,
+        monthly_rent: property.monthly_rent,
+        key_money: property.key_money,
+        maintenance_fee: property.maintenance_fee,
+        size: property.size,
+        description: property.description,
+        floor: property.floor,
+        nearest_station: property.nearest_station,
+        distance_to_station: property.distance_to_station,
+      };
+    });
 
     if (answer) {
       setAnswers((prev) => [...prev, answer as string]);
     }
-    if (properties) {
-      setProperties([...mainProperties, ...subProperties]);
+    if (mainProperties.length > 0 || subProperties.length > 0) {
+      setMainProperties(mainPropertiesData);
+      setSubProperties(subPropertiesData);
       setFocusedPropertyId(null);
-
-      const top3 = {} as threePropertyIds;
-      top3[1] = mainProperties[0]?.id;
-      top3[2] = mainProperties[1]?.id;
-      top3[3] = mainProperties[2]?.id;
-
-      setThreePropertyIds(top3);
     }
   }
 
@@ -99,7 +90,7 @@ export default function Home() {
       <NavBar />
 
       <div className="flex flex-row h-full w-full pt-[56px]">
-        {properties.length > 0 ? (
+        {mainProperties.length > 0 || subProperties.length > 0 ? (
           <div
             className="fixed top-24 w-[58px] h-[66px] bg-white rounded-r-[17px] z-20 shadow-xl flex justify-center items-center cursor-pointer"
             onClick={() => setShowPropertyList(true)}
@@ -114,7 +105,8 @@ export default function Home() {
         ) : null}
 
         <PropertyList
-          properties={properties}
+          mainProperties={mainProperties}
+          subProperties={subProperties}
           showPropertyList={showPropertyList}
           setShowPropertyList={setShowPropertyList}
           focusedPropertyId={focusedPropertyId}
@@ -123,16 +115,8 @@ export default function Home() {
 
         <div className="w-full h-full">
           <Map
-            threePropertyIds={threePropertyIds}
-            markerData={properties.map((property) => {
-              return {
-                id: property.id,
-                lat: +property.latitude,
-                lng: +property.longitude,
-                monthly_rent: property.monthly_rent,
-                deposit: property.deposit,
-              };
-            })}
+            mainProperties={mainProperties}
+            subProperties={subProperties}
             focusedPropertyId={focusedPropertyId}
             setShowPropertyList={setShowPropertyList}
             setFocusedPropertyId={setFocusedPropertyId}
@@ -144,7 +128,7 @@ export default function Home() {
             <div className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide">
               {questions.map((question, idx) => (
                 <div key={idx}>
-                  <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] text-right size-fit">
+                  <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] size-fit">
                     <MultilineText text={question} />
                   </div>
                   <div className="flex flex-row mr-auto mt-4 gap-2 justify-start items-start">

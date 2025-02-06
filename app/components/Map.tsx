@@ -1,7 +1,6 @@
 "use client";
 
 import Script from "next/script";
-import { markerData } from "@/app/types/map";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { reload, zoomIn, zoomOut } from "../lib/custom-map-control";
 import {
@@ -14,7 +13,7 @@ import {
   thirdFocusedMarker,
   thirdUnfocusedMarker,
 } from "../lib/custom-map-marker";
-import { threePropertyIds } from "../types/topThreePropertyIds";
+import { Property } from "../types/property";
 // import { seoulGeoJson } from "../lib/seoulGeojson";
 // import { guRegionMarkerData } from "../lib/guRegionMarkerData";
 // import {
@@ -25,14 +24,14 @@ import { threePropertyIds } from "../types/topThreePropertyIds";
 const MAP_ID = "naver-map";
 
 export default function Map({
-  threePropertyIds,
-  markerData,
+  mainProperties,
+  subProperties,
   setShowPropertyList,
   focusedPropertyId,
   setFocusedPropertyId,
 }: {
-  threePropertyIds: threePropertyIds | undefined;
-  markerData: markerData[];
+  mainProperties: Property[];
+  subProperties: Property[];
   setShowPropertyList: Dispatch<SetStateAction<boolean>>;
   focusedPropertyId: number | null;
   setFocusedPropertyId: Dispatch<SetStateAction<number | null>>;
@@ -177,22 +176,26 @@ export default function Map({
 
   //마커 생성
   useEffect(() => {
-    if (mapRef.current && markerData.length > 0) {
+    if (
+      mapRef.current &&
+      (mainProperties.length > 0 || subProperties.length > 0)
+    ) {
       propertyMarkersRef.current.forEach((marker) => marker.setMap(null));
       propertyMarkersRef.current = [];
 
-      const total = markerData.reduce(
-        (acc, marker) => {
-          acc.latSum += marker.lat;
-          acc.lngSum += marker.lng;
+      const totalProperties = [...mainProperties, ...subProperties];
+      const total = totalProperties.reduce(
+        (acc, property) => {
+          acc.latSum += +property.latitude;
+          acc.lngSum += +property.longitude;
           return acc;
         },
         { latSum: 0, lngSum: 0 }
       );
 
       const locAverage = {
-        lng: total.lngSum / markerData.length,
-        lat: total.latSum / markerData.length,
+        lng: total.lngSum / totalProperties.length,
+        lat: total.latSum / totalProperties.length,
       };
 
       if (!focusedPropertyId) {
@@ -219,29 +222,25 @@ export default function Map({
         );
       }
 
-      const newMarkers = markerData.map((spot) => {
-        const latlng = new naver.maps.LatLng(spot.lat, spot.lng);
+      const newMainMarkers = mainProperties.map((spot, idx) => {
+        const latlng = new naver.maps.LatLng(+spot.latitude, +spot.longitude);
 
         let icon;
         if (spot.id === focusedPropertyId) {
-          if (spot.id === threePropertyIds?.[1]) {
+          if (idx === 0) {
             icon = firstFocusedMarker;
-          } else if (spot.id === threePropertyIds?.[2]) {
+          } else if (idx === 1) {
             icon = secondFocusedMarker;
-          } else if (spot.id === threePropertyIds?.[3]) {
-            icon = thirdFocusedMarker;
           } else {
-            icon = generalFocusedMarker;
+            icon = thirdFocusedMarker;
           }
         } else {
-          if (spot.id === threePropertyIds?.[1]) {
+          if (idx === 0) {
             icon = firstUnfocusedMarker;
-          } else if (spot.id === threePropertyIds?.[2]) {
+          } else if (idx === 1) {
             icon = secondUnfocusedMarker;
-          } else if (spot.id === threePropertyIds?.[3]) {
-            icon = thirdUnfocusedMarker;
           } else {
-            icon = generalUnfocusedMarker;
+            icon = thirdUnfocusedMarker;
           }
         }
 
@@ -262,11 +261,36 @@ export default function Map({
         return marker;
       });
 
-      propertyMarkersRef.current = newMarkers;
+      const newSubMarkers = subProperties.map((spot) => {
+        const latlng = new naver.maps.LatLng(+spot.latitude, +spot.longitude);
+
+        const icon =
+          spot.id === focusedPropertyId
+            ? generalFocusedMarker
+            : generalUnfocusedMarker;
+
+        const marker = new naver.maps.Marker({
+          position: latlng,
+          map: mapRef.current,
+          clickable: true,
+          icon: {
+            content: icon,
+          },
+        });
+
+        naver.maps.Event.addListener(marker, "click", () => {
+          setShowPropertyList(true);
+          setFocusedPropertyId(spot.id);
+        });
+
+        return marker;
+      });
+
+      propertyMarkersRef.current = [...newMainMarkers, ...newSubMarkers];
     }
   }, [
-    threePropertyIds,
-    markerData,
+    mainProperties,
+    subProperties,
     focusedPropertyId,
     setShowPropertyList,
     setFocusedPropertyId,

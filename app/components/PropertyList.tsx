@@ -5,13 +5,15 @@ import { Dispatch, SetStateAction } from "react";
 import PropertyDetail from "./PropertyDetail";
 
 export default function PropertyList({
-  properties,
+  mainProperties,
+  subProperties,
   showPropertyList,
   setShowPropertyList,
   focusedPropertyId,
   setFocusedPropertyId,
 }: {
-  properties: Property[];
+  mainProperties: Property[];
+  subProperties: Property[];
   showPropertyList: boolean;
   setShowPropertyList: Dispatch<SetStateAction<boolean>>;
   focusedPropertyId: number | null;
@@ -28,7 +30,10 @@ export default function PropertyList({
         className="w-[355px] bg-white h-full overflow-y-scroll scrollbar-hide fixed top-0 pt-[56px] z-20"
         initial="hidden"
         animate={
-          properties.length > 0 && showPropertyList ? "visible" : "hidden"
+          (mainProperties.length > 0 || subProperties.length > 0) &&
+          showPropertyList
+            ? "visible"
+            : "hidden"
         }
         transition={{ duration: 0.5 }}
         variants={variants}
@@ -37,7 +42,9 @@ export default function PropertyList({
           <div className="flex flex-row justify-between">
             <div className="font-bold text-lg">
               추천 매물{" "}
-              <span className="text-[#9747FF]">{properties.length}</span>
+              <span className="text-[#9747FF]">
+                {mainProperties.length + subProperties.length}
+              </span>
             </div>
             <Image
               src="/btn-sidebar.svg"
@@ -70,7 +77,7 @@ export default function PropertyList({
         </div>
 
         <div className="flex flex-col *:border-b-[1px] *:border-b-[#E9E9F1]">
-          {properties.map((property, idx) => (
+          {mainProperties.map((property, idx) => (
             <div
               key={idx}
               style={{ backgroundColor: idx < 3 ? "#F1F1FF" : "#FFF" }}
@@ -110,6 +117,72 @@ export default function PropertyList({
                   className="absolute top-6 left-7"
                 />
               ) : null}
+              <Image
+                src="/btn-heart-outline.svg"
+                width={19.6}
+                height={19.6}
+                alt="heart"
+                className="absolute top-[90px] left-[90px]"
+              />
+              <div className="w-full space-y-[3px]">
+                <div className="space-y-[2px] *:text-[#121212]">
+                  <div className="text-xs font-medium">{property.purpose}</div>
+                  <div className="text-base font-bold">
+                    월세 {property.deposit}만/
+                    {property.monthly_rent}만
+                  </div>
+                  <div className="text-xs font-bold">
+                    권리금 {property.key_money}만 / 관리비{" "}
+                    {property.maintenance_fee}만
+                  </div>
+                </div>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="195"
+                  height="2"
+                  viewBox="0 0 195 2"
+                  fill="none"
+                >
+                  <path
+                    d="M1.15625 0.584961H194.156"
+                    stroke="#BABABA"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="*:text-xs *:font-medium *:text-[#505050]">
+                  <div>
+                    {property.size + "평 / "}
+                    {property.floor + " / "}
+                    {property.nearest_station?.length +
+                      property.distance_to_station?.length >
+                    10
+                      ? (
+                          property.nearest_station +
+                          property.distance_to_station
+                        ).slice(0, 10) + "..."
+                      : property.nearest_station +
+                        " " +
+                        property.distance_to_station}
+                  </div>
+                  <div>{property.purpose + " 추천"}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+
+          {subProperties.map((property, idx) => (
+            <div
+              key={idx}
+              style={{ backgroundColor: idx < 3 ? "#F1F1FF" : "#FFF" }}
+              className="h-[129px] w-full flex flex-row py-4 px-5 gap-5 cursor-pointer relative"
+              onClick={() => setFocusedPropertyId(property.id)}
+            >
+              <Image
+                src="example-property-thumbnail.svg"
+                width={100}
+                height={100}
+                alt="thumbnail"
+              />
               <Image
                 src="/btn-heart-outline.svg"
                 width={19.6}
