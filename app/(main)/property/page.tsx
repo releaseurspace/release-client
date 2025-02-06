@@ -9,6 +9,7 @@ import { Property } from "@/app/types/property";
 import PropertyList from "@/app/components/PropertyList";
 import Map from "@/app/components/Map";
 import callAPI from "@/app/util/call-api";
+import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 
 export default function Home() {
   const [promptLines, setPromptLines] = useState<number>(1);
@@ -125,7 +126,7 @@ export default function Home() {
 
         <div className="min-w-[432px] max-w-[432px] h-full flex flex-col px-4 pb-6">
           {questions.length || answers.length ? (
-            <div className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide">
+            <AutoScrollDiv>
               {questions.map((question, idx) => (
                 <div key={idx}>
                   <div className="bg-[#F1F1FF] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tl-3xl rounded-tr ml-auto mt-4 max-w-[385px] size-fit">
@@ -154,7 +155,7 @@ export default function Home() {
                   </div>
                 </div>
               ))}
-            </div>
+            </AutoScrollDiv>
           ) : (
             <div className="h-full flex flex-col justify-center items-center">
               <Image

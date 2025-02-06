@@ -26,7 +26,7 @@ export default function AutoScrollDiv({ children }: AutoScrollDivProps) {
     <div
       ref={scrollRef}
       onScroll={handleScroll}
-      className="h-full w-full overflow-y-auto"
+      className="h-full flex flex-col overflow-y-scroll pb-4 scrollbar-hide"
     >
       {children}
     </div>
