@@ -59,7 +59,7 @@ export default function PropertyDetail({
         />
       </div>
 
-      <div id="detail" className="w-full h-full overflow-y-auto pb-[106px]">
+      <div id="detail" className="w-full h-full overflow-y-auto scrollbar-hide pb-[106px]">
         <div>
           <Image
             src="example-property-detail.svg"
