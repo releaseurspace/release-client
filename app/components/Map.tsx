@@ -180,7 +180,6 @@ export default function Map({
       mapRef.current &&
       (mainProperties.length > 0 || subProperties.length > 0)
     ) {
-
       propertyMarkersRef.current.forEach((marker) => marker.setMap(null));
       propertyMarkersRef.current = [];
 
@@ -257,12 +256,13 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
+          document.getElementById("list")?.scrollTo({ top: idx * 129, behavior:"smooth" });
         });
 
         return marker;
       });
 
-      const newSubMarkers = subProperties.map((spot) => {
+      const newSubMarkers = subProperties.map((spot, idx) => {
         const latlng = new naver.maps.LatLng(+spot.latitude, +spot.longitude);
 
         const icon =
@@ -282,6 +282,9 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
+          document
+            .getElementById("list")
+            ?.scrollTo({ top: (mainProperties.length + idx) * 129 , behavior:"smooth"});
         });
 
         return marker;

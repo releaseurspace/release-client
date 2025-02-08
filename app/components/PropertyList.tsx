@@ -27,7 +27,7 @@ export default function PropertyList({
   return (
     <>
       <motion.div
-        className="w-[355px] bg-white h-full overflow-y-scroll scrollbar-hide fixed top-0 pt-[56px] z-20"
+        className="w-[355px] bg-white h-full fixed top-0 pt-[56px] z-20 flex flex-col"
         initial="hidden"
         animate={
           (mainProperties.length > 0 || subProperties.length > 0) &&
@@ -76,7 +76,10 @@ export default function PropertyList({
           </div>
         </div>
 
-        <div className="flex flex-col *:border-b-[1px] *:border-b-[#E9E9F1]">
+        <div
+          id="list"
+          className="flex flex-col *:border-b-[1px] *:border-b-[#E9E9F1] overflow-y-scroll"
+        >
           {mainProperties.map((property, idx) => (
             <div
               key={idx}
