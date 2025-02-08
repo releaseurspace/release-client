@@ -43,8 +43,6 @@ export default function Home() {
           );
           setQuestion("");
 
-          console.log("res", res);
-
           const reader = res
             .body!.pipeThrough(new TextDecoderStream())
             .getReader();
@@ -61,7 +59,6 @@ export default function Home() {
               if (!trimmed) continue;
               try {
                 const parsed = JSON.parse(trimmed);
-                console.log("parsed", parsed);
                 setTokens((prev) => [...prev, parsed.token]);
               } catch (e) {
                 console.error("JSON 파싱 에러:", e, trimmed);

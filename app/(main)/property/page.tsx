@@ -79,7 +79,7 @@ export default function Home() {
     if (answer) {
       setAnswers((prev) => [...prev, answer as string]);
     }
-    if (mainProperties.length > 0 || subProperties.length > 0) {
+    if (mainPropertiesData.length > 0 || subPropertiesData.length > 0) {
       setMainProperties(mainPropertiesData);
       setSubProperties(subPropertiesData);
       setFocusedPropertyId(null);

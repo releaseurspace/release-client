@@ -80,7 +80,7 @@ export default function PropertyList({
           {mainProperties.map((property, idx) => (
             <div
               key={idx}
-              style={{ backgroundColor: idx < 3 ? "#F1F1FF" : "#FFF" }}
+              style={{ backgroundColor: "#F1F1FF" }}
               className="h-[129px] w-full flex flex-row py-4 px-5 gap-5 cursor-pointer relative"
               onClick={() => setFocusedPropertyId(property.id)}
             >
@@ -173,7 +173,7 @@ export default function PropertyList({
           {subProperties.map((property, idx) => (
             <div
               key={idx}
-              style={{ backgroundColor: idx < 3 ? "#F1F1FF" : "#FFF" }}
+              style={{ backgroundColor: "#FFF" }}
               className="h-[129px] w-full flex flex-row py-4 px-5 gap-5 cursor-pointer relative"
               onClick={() => setFocusedPropertyId(property.id)}
             >

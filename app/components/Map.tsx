@@ -180,6 +180,7 @@ export default function Map({
       mapRef.current &&
       (mainProperties.length > 0 || subProperties.length > 0)
     ) {
+
       propertyMarkersRef.current.forEach((marker) => marker.setMap(null));
       propertyMarkersRef.current = [];
 
