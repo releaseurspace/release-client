@@ -21,6 +21,7 @@ import {
   unfocusedGuRegionMarker,
 } from "../lib/custom-map-region-marker";
 import { guNames } from "../lib/seoulAreaName";
+import { defaultStyle, focusedStyle } from "../lib/geojsonFeatureStyle";
 
 const MAP_ID = "naver-map";
 
@@ -41,7 +42,7 @@ export default function Map({
   const propertyMarkersRef = useRef<naver.maps.Marker[]>([]);
   const guRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
 
-  const [zoomLevel, setZoomLevel] = useState<number>();
+  const [zoomLevel, setZoomLevel] = useState<number>(12);
 
   //지도 생성, 컨트롤 버튼 생성, 행정구역 폴리곤 생성
   useEffect(() => {
@@ -107,23 +108,6 @@ export default function Map({
       });
 
       const guFeatures = map.data.getAllFeature();
-
-      const defaultStyle = {
-        fillColor: "#000000",
-        fillOpacity: 0,
-        strokeColor: "#000000",
-        strokeWeight: 0,
-        strokeOpacity: 0,
-        clickable: false,
-      };
-      const focusedStyle = {
-        fillColor: "#885AFF",
-        fillOpacity: 0.1,
-        strokeColor: "#885AFF",
-        strokeWeight: 1.6,
-        strokeOpacity: 1,
-        clickable: false,
-      };
 
       map.data.setStyle(defaultStyle);
 
@@ -215,25 +199,29 @@ export default function Map({
 
   //줌 레벨 & 매물 검색 여부에 따라 구/동 마커 visible/invisible
   useEffect(() => {
-    const invisible = mainProperties.length > 0 || subProperties.length > 0;
+    const guFeatures = mapRef.current!.data.getAllFeature();
+    const guVisible = zoomLevel >= 11 && zoomLevel <= 13;
+    // const dongInvisible;
+    const allInvisible = mainProperties.length > 0 || subProperties.length > 0;
 
-    guRegionMarkersRef.current.forEach((guMarker) => {
-      if (zoomLevel && !invisible) {
-        guMarker.setVisible(zoomLevel >= 11 && zoomLevel <= 13);
-      }
-      if (invisible) {
+    if (allInvisible) {
+      guRegionMarkersRef.current.forEach((guMarker) => {
         guMarker.setVisible(false);
-        mapRef.current!.data.getAllFeature().forEach((feature) => {
-          feature.setStyle({
-            fillColor: "#000000",
-            fillOpacity: 0,
-            strokeColor: "#000000",
-            strokeWeight: 0,
-            strokeOpacity: 0,
-          });
+      });
+    } else {
+      guRegionMarkersRef.current.forEach((guMarker, idx) => {
+        guMarker.setVisible(guVisible);
+        guMarker.setIcon({
+          content: unfocusedGuRegionMarker(guNames[idx]),
+          size: new naver.maps.Size(77.99, 63.99),
+          anchor: new naver.maps.Point(0, 0),
         });
-      }
-    });
+
+        guFeatures.forEach((feature) => {
+          feature.setStyle(defaultStyle);
+        });
+      });
+    }
   }, [zoomLevel, mainProperties, subProperties]);
 
   //매물 마커 생성
