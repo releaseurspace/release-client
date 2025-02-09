@@ -40,7 +40,7 @@ export default function Map({
   const mapRef = useRef<naver.maps.Map | undefined>(undefined);
   const propertyMarkersRef = useRef<naver.maps.Marker[]>([]);
   const guRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
- 
+
   const [zoomLevel, setZoomLevel] = useState<number>();
 
   //지도 생성, 컨트롤 버튼 생성, 행정구역 폴리곤 생성
@@ -165,34 +165,27 @@ export default function Map({
             anchor: new naver.maps.Point(0, 0),
           });
 
-          // guFeatures.filter((feature, index) => {
-          //   if (index !== idx) {
-          //     feature.setStyle(defaultStyle);
-          //   }
-          // });
-          // guFeatures[idx].setStyle(focusedStyle);
+          naver.maps.Event.resumeDispatch(marker, "mouseout");
+
+          guFeatures[idx].setStyle(focusedStyle);
         });
 
-        const mouseOut = naver.maps.Event.addListener(
-          marker,
-          "mouseout",
-          () => {
-            marker.setIcon({
-              content: unfocusedIcon,
-              size: new naver.maps.Size(77.99, 63.99),
-              anchor: new naver.maps.Point(0, 0),
-            });
+        naver.maps.Event.addListener(marker, "mouseout", () => {
+          marker.setIcon({
+            content: unfocusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          });
 
-            guFeatures[idx].setStyle(defaultStyle);
-          }
-        );
+          guFeatures[idx].setStyle(defaultStyle);
+        });
 
         naver.maps.Event.addListener(marker, "click", () => {
           marker.setIcon({
             content: focusedIcon,
           });
 
-          naver.maps.Event.removeListener(mouseOut);
+          naver.maps.Event.stopDispatch(marker, "mouseout");
 
           map.panTo(latlng, { duration: 400 });
 
@@ -211,7 +204,6 @@ export default function Map({
               feature.setStyle(defaultStyle);
             }
           });
-          guFeatures[idx].setStyle(focusedStyle);
         });
 
         return marker;
