@@ -14,7 +14,6 @@ import {
   thirdUnfocusedMarker,
 } from "../lib/custom-map-marker";
 import { Property } from "../types/property";
-import { seoulGeoJson } from "../lib/seoulGeojson";
 import { guRegionMarkerData } from "../lib/guRegionMarkerData";
 import {
   focusedGuRegionMarker,
@@ -22,6 +21,7 @@ import {
 } from "../lib/custom-map-region-marker";
 import { guNames } from "../lib/seoulAreaName";
 import { defaultStyle, focusedStyle } from "../lib/geojsonFeatureStyle";
+import { seoulGuGeoJson } from "../lib/seoulGeojson";
 
 const MAP_ID = "naver-map";
 
@@ -95,13 +95,13 @@ export default function Map({
     mapRef.current = map;
   }, []);
 
-  // 행정구역 폴리곤&마커 생성
+  // 행정구역 구 폴리곤&마커 생성
   useEffect(() => {
     const map = mapRef.current!;
 
     naver.maps.Event.once(map, "init", () => {
       //행정구역 구 폴리곤
-      const regionGeoJson = seoulGeoJson;
+      const regionGeoJson = seoulGuGeoJson;
 
       regionGeoJson.forEach((geojson) => {
         map.data.addGeoJson(geojson as naver.maps.GeoJSON, true);
@@ -197,9 +197,33 @@ export default function Map({
     });
   }, []);
 
+  // 행정구역 동 폴리곤&마커 생성
+  // useEffect(() => {
+  //   const map = mapRef.current!;
+
+  //   naver.maps.Event.once(map, "init", () => {
+  //     //행정구역 동 폴리곤
+  //     const regionGeoJson = seoulDongGeoJson;
+
+  //     map.data.addGeoJson(regionGeoJson as naver.maps.GeoJSON, true);
+
+  //     const dongFeatures = map.data
+  //       .getAllFeature()
+  //       .slice(25, map.data.getAllFeature().length);
+
+  //     map.data.setStyle(focusedStyle);
+
+  //     //행정구역 구 마커
+  //   });
+  // }, []);
+
   //줌 레벨 & 매물 검색 여부에 따라 구/동 마커 visible/invisible
   useEffect(() => {
     const guFeatures = mapRef.current!.data.getAllFeature();
+    guFeatures.forEach((feature) => {
+      feature.setStyle(defaultStyle);
+    });
+
     const guVisible = zoomLevel >= 11 && zoomLevel <= 13;
     // const dongInvisible;
     const allInvisible = mainProperties.length > 0 || subProperties.length > 0;
@@ -215,10 +239,6 @@ export default function Map({
           content: unfocusedGuRegionMarker(guNames[idx]),
           size: new naver.maps.Size(77.99, 63.99),
           anchor: new naver.maps.Point(0, 0),
-        });
-
-        guFeatures.forEach((feature) => {
-          feature.setStyle(defaultStyle);
         });
       });
     }
