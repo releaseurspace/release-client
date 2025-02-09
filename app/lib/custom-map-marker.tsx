@@ -3,23 +3,10 @@ export const generalUnfocusedMarker = `<svg xmlns="http://www.w3.org/2000/svg" w
             <circle cx="6" cy="6" r="4.5" fill="#8644FF" stroke="white"/>
           </svg>`;
 export const generalFocusedMarker = `<div style="position: relative;">
-            <svg
-              style="top: -35; left: -13; position: absolute;"
-              width="36"
-              height="47"
-              viewBox="0 0 36 47"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="18" cy="41" r="6" fill="white" />
-              <circle cx="18" cy="41" r="4.5" fill="white" stroke="#6E39FD" />
-              <rect width="36" height="36" rx="18" fill="#6E39FD" />
-              <path
-                d="M18.866 42.5C18.4811 43.1667 17.5189 43.1667 17.134 42.5L12.8038 35C12.4189 34.3333 12.9001 33.5 13.6699 33.5L22.3301 33.5C23.0999 33.5 23.5811 34.3333 23.1962 35L18.866 42.5Z"
-                fill="#6E39FD"
-              />
-              <circle cx="18" cy="18" r="10" fill="white" />
-            </svg>
+            <svg style="position: absolute; left: -4px; top: -4px;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="9.9999" cy="10.0004" r="9.6" fill="#5E3AA1"/>
+<circle cx="10" cy="10" r="7.5" fill="#5E3AA1" stroke="white"/>
+</svg>
           </div>`;
 
 export const firstUnfocusedMarker = `

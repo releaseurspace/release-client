@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { reload, zoomIn, zoomOut } from "../lib/custom-map-control";
 import {
   firstFocusedMarker,
@@ -14,12 +14,13 @@ import {
   thirdUnfocusedMarker,
 } from "../lib/custom-map-marker";
 import { Property } from "../types/property";
-// import { seoulGeoJson } from "../lib/seoulGeojson";
-// import { guRegionMarkerData } from "../lib/guRegionMarkerData";
-// import {
-//   focusedGuRegionMarker,
-//   unfocusedGuRegionMarker,
-// } from "../lib/custom-map-region-marker";
+import { seoulGeoJson } from "../lib/seoulGeojson";
+import { guRegionMarkerData } from "../lib/guRegionMarkerData";
+import {
+  focusedGuRegionMarker,
+  unfocusedGuRegionMarker,
+} from "../lib/custom-map-region-marker";
+import { guNames } from "../lib/seoulAreaName";
 
 const MAP_ID = "naver-map";
 
@@ -38,7 +39,9 @@ export default function Map({
 }) {
   const mapRef = useRef<naver.maps.Map | undefined>(undefined);
   const propertyMarkersRef = useRef<naver.maps.Marker[]>([]);
-  // const guRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
+  const guRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
+ 
+  const [zoomLevel, setZoomLevel] = useState<number>();
 
   //지도 생성, 컨트롤 버튼 생성, 행정구역 폴리곤 생성
   useEffect(() => {
@@ -51,6 +54,10 @@ export default function Map({
       mapDataControl: false,
     };
     const map = new naver.maps.Map(MAP_ID, mapOptions);
+
+    naver.maps.Event.addListener(map, "zoom_changed", function (zoom) {
+      setZoomLevel(zoom);
+    });
 
     //컨트롤 버튼 생성
     naver.maps.Event.once(map, "init", function () {
@@ -84,97 +91,160 @@ export default function Map({
       );
     });
 
-    // 행정구역 폴리곤 생성
-    // naver.maps.Event.once(map, "init", () => {
-    //   const newGuRegionMarkers = guRegionMarkerData.map((region, idx) => {
-    //     const latlng = new naver.maps.LatLng(region.lat, region.lng);
-
-    //     const marker = new naver.maps.Marker({
-    //       position: latlng,
-    //       map: mapRef.current,
-    //       clickable: true,
-    //       icon: {
-    //         content: unfocusedGuRegionMarker(region.guName, idx),
-    //       },
-    //     });
-
-    //     naver.maps.Event.addListener(marker, "click", () => {
-    //       console.log("focused!");
-
-    //       marker.setIcon(focusedGuRegionMarker(region.guName, idx));
-    //       map.panTo(latlng, { duration: 400 });
-    //     });
-
-    //     return marker;
-    //   });
-
-    //   guRegionMarkersRef.current = newGuRegionMarkers;
-
-    //   map.data.setStyle(function (feature) {
-    //     const styleOptions = {
-    //       fillColor: "#ff0000",
-    //       fillOpacity: 0.0001,
-    //       strokeColor: "#ff0000",
-    //       strokeWeight: 2,
-    //       strokeOpacity: 0.4,
-    //     };
-
-    //     if (feature.getProperty("focus")) {
-    //       styleOptions.fillOpacity = 0.6;
-    //       styleOptions.fillColor = "#0f0";
-    //       styleOptions.strokeColor = "#0f0";
-    //       styleOptions.strokeWeight = 4;
-    //       styleOptions.strokeOpacity = 1;
-    //     }
-
-    //     return styleOptions;
-    //   });
-
-    //   const regionGeoJson = seoulGeoJson;
-
-    //   regionGeoJson.forEach(function (geojson) {
-    //     map.data.addGeoJson(geojson as naver.maps.GeoJSON, true);
-    //   });
-
-    //   map.data.addListener("click", function (e) {
-    //     const feature = e.feature;
-
-    //     if (feature.getProperty("focus") !== true) {
-    //       feature.setProperty("focus", true);
-    //     } else {
-    //       feature.setProperty("focus", false);
-    //     }
-    //   });
-
-    //   // map.data.addListener("mouseover", function (e) {
-    //   //   const feature = e.feature,
-    //   //     regionName = feature.getProperty("area1");
-
-    //   //   tooltip
-    //   //     .css({
-    //   //       display: "",
-    //   //       left: e.offset.x,
-    //   //       top: e.offset.y,
-    //   //     })
-    //   //     .text(regionName);
-
-    //   //   map.data.overrideStyle(feature, {
-    //   //     fillOpacity: 0.6,
-    //   //     strokeWeight: 4,
-    //   //     strokeOpacity: 1,
-    //   //   });
-    //   // });
-
-    //   // map.data.addListener("mouseout", function () {
-    //   //   tooltip.hide().empty();
-    //   //   // map.data.revertStyle();
-    //   // });
-    // });
-
     mapRef.current = map;
   }, []);
 
-  //마커 생성
+  // 행정구역 폴리곤&마커 생성
+  useEffect(() => {
+    const map = mapRef.current!;
+
+    naver.maps.Event.once(map, "init", () => {
+      //행정구역 구 폴리곤
+      const regionGeoJson = seoulGeoJson;
+
+      regionGeoJson.forEach((geojson) => {
+        map.data.addGeoJson(geojson as naver.maps.GeoJSON, true);
+      });
+
+      const guFeatures = map.data.getAllFeature();
+
+      const defaultStyle = {
+        fillColor: "#000000",
+        fillOpacity: 0,
+        strokeColor: "#000000",
+        strokeWeight: 0,
+        strokeOpacity: 0,
+        clickable: false,
+      };
+      const focusedStyle = {
+        fillColor: "#885AFF",
+        fillOpacity: 0.1,
+        strokeColor: "#885AFF",
+        strokeWeight: 1.6,
+        strokeOpacity: 1,
+        clickable: false,
+      };
+
+      map.data.setStyle(defaultStyle);
+
+      map.data.addListener("click", function (e) {
+        const feature = e.feature;
+
+        if (feature.getProperty("focus") !== true) {
+          feature.setProperty("focus", true);
+        } else {
+          feature.setProperty("focus", false);
+        }
+      });
+
+      //행정구역 구 마커
+      const newGuRegionMarkers = guRegionMarkerData.map((region, idx) => {
+        const latlng = new naver.maps.LatLng(region.lat, region.lng);
+
+        const unfocusedIcon = unfocusedGuRegionMarker(region.guName);
+        const focusedIcon = focusedGuRegionMarker(region.guName);
+
+        const marker = new naver.maps.Marker({
+          position: latlng,
+          map: mapRef.current,
+          icon: {
+            content: unfocusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          },
+          shape: {
+            coords: [0, 0, 69, 47],
+            type: "rect",
+          },
+        });
+
+        naver.maps.Event.addListener(marker, "mouseover", () => {
+          marker.setIcon({
+            content: focusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          });
+
+          // guFeatures.filter((feature, index) => {
+          //   if (index !== idx) {
+          //     feature.setStyle(defaultStyle);
+          //   }
+          // });
+          // guFeatures[idx].setStyle(focusedStyle);
+        });
+
+        const mouseOut = naver.maps.Event.addListener(
+          marker,
+          "mouseout",
+          () => {
+            marker.setIcon({
+              content: unfocusedIcon,
+              size: new naver.maps.Size(77.99, 63.99),
+              anchor: new naver.maps.Point(0, 0),
+            });
+
+            guFeatures[idx].setStyle(defaultStyle);
+          }
+        );
+
+        naver.maps.Event.addListener(marker, "click", () => {
+          marker.setIcon({
+            content: focusedIcon,
+          });
+
+          naver.maps.Event.removeListener(mouseOut);
+
+          map.panTo(latlng, { duration: 400 });
+
+          guRegionMarkersRef.current.forEach((marker, index) => {
+            if (index !== idx) {
+              marker.setIcon({
+                content: unfocusedGuRegionMarker(guNames[index]),
+                size: new naver.maps.Size(77.99, 63.99),
+                anchor: new naver.maps.Point(0, 0),
+              });
+            }
+          });
+
+          guFeatures.filter((feature, index) => {
+            if (index !== idx) {
+              feature.setStyle(defaultStyle);
+            }
+          });
+          guFeatures[idx].setStyle(focusedStyle);
+        });
+
+        return marker;
+      });
+
+      guRegionMarkersRef.current = newGuRegionMarkers;
+    });
+  }, []);
+
+  //줌 레벨 & 매물 검색 여부에 따라 구/동 마커 visible/invisible
+  useEffect(() => {
+    const invisible = mainProperties.length > 0 || subProperties.length > 0;
+
+    guRegionMarkersRef.current.forEach((guMarker) => {
+      if (zoomLevel && !invisible) {
+        guMarker.setVisible(zoomLevel >= 11 && zoomLevel <= 13);
+      }
+      if (invisible) {
+        guMarker.setVisible(false);
+        mapRef.current!.data.getAllFeature().forEach((feature) => {
+          feature.setStyle({
+            fillColor: "#000000",
+            fillOpacity: 0,
+            strokeColor: "#000000",
+            strokeWeight: 0,
+            strokeOpacity: 0,
+          });
+        });
+      }
+    });
+  }, [zoomLevel, mainProperties, subProperties]);
+
+  //매물 마커 생성
   useEffect(() => {
     if (
       mapRef.current &&
@@ -201,10 +271,6 @@ export default function Map({
       if (!focusedPropertyId) {
         mapRef.current.setOptions({
           zoom: 13.5,
-          // center: new window.naver.maps.LatLng([
-          //   locAverage.lng - 0.015,
-          //   locAverage.lat,
-          // ]),
         });
         mapRef.current.panTo(
           new window.naver.maps.LatLng([locAverage.lng - 0.015, locAverage.lat])
@@ -212,10 +278,6 @@ export default function Map({
       } else {
         mapRef.current.setOptions({
           zoom: 13,
-          // center: new window.naver.maps.LatLng([
-          //   locAverage.lng - 0.06,
-          //   locAverage.lat,
-          // ]),
         });
         mapRef.current.panTo(
           new window.naver.maps.LatLng([locAverage.lng - 0.06, locAverage.lat])
@@ -256,7 +318,9 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
-          document.getElementById("list")?.scrollTo({ top: idx * 129, behavior:"smooth" });
+          document
+            .getElementById("list")
+            ?.scrollTo({ top: idx * 129, behavior: "smooth" });
         });
 
         return marker;
@@ -282,9 +346,10 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           setShowPropertyList(true);
           setFocusedPropertyId(spot.id);
-          document
-            .getElementById("list")
-            ?.scrollTo({ top: (mainProperties.length + idx) * 129 , behavior:"smooth"});
+          document.getElementById("list")?.scrollTo({
+            top: (mainProperties.length + idx) * 129,
+            behavior: "smooth",
+          });
         });
 
         return marker;

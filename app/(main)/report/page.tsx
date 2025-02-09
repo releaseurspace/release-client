@@ -4,6 +4,8 @@ import NavBar from "@/app/components/NavBar";
 import { useState } from "react";
 
 export default function Home() {
+  const [mainProperties, setMainProperties] = useState([]);
+  const [subProperties, setSubProperties] = useState([]);
   const [tokens, setTokens] = useState<string[]>([]);
   const [question, setQuestion] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
@@ -15,7 +17,7 @@ export default function Home() {
       <input
         value={userId}
         placeholder="userID"
-        className="border border-1"
+        className="border"
         onChange={(e) => setUserId(e.target.value)}
       ></input>
       <input
@@ -26,7 +28,7 @@ export default function Home() {
       ></input>
 
       <button
-        className="bg-yellow-500 mt-20 ml-20 w-12 h-12"
+        className="mt-20 ml-6 border-2 rounded-lg px-3 bg-slate-300"
         onClick={async () => {
           const res = await fetch(
             "https://3.38.128.30.nip.io/langchain/stream",
@@ -43,6 +45,10 @@ export default function Home() {
           );
           setQuestion("");
 
+          console.log("res", res);
+          // const resData = await res.json()
+          // console.log(resData)
+
           const reader = res
             .body!.pipeThrough(new TextDecoderStream())
             .getReader();
@@ -50,16 +56,25 @@ export default function Home() {
           while (true) {
             const { value, done } = await reader.read();
             if (done) break;
+            console.log("value",value)
 
-            // 한 번에 여러 줄이 담겨올 수 있으므로 split
             const lines = value.split("\n");
+            console.log("lines", lines)
             for (const line of lines) {
               const trimmed = line.trim();
-              // 빈 줄이면 무시
               if (!trimmed) continue;
               try {
+                // console.log(trimmed);
                 const parsed = JSON.parse(trimmed);
-                setTokens((prev) => [...prev, parsed.token]);
+                // console.log("parsed", parsed);
+                if (parsed.mainProperties) {
+                  setMainProperties(parsed.mainProperties);
+                }
+                if (parsed.subProperties) {
+                  setSubProperties(parsed.subProperties);
+                } else {
+                  setTokens((prev) => [...prev, parsed.token]);
+                }
               } catch (e) {
                 console.error("JSON 파싱 에러:", e, trimmed);
               }
@@ -70,6 +85,15 @@ export default function Home() {
         call api
       </button>
 
+      <div className="mt-10"></div>
+      <div>
+        mainProperties: <br />
+        {mainProperties.toString()}
+      </div>
+      <div>
+        subProperties: <br />
+        {subProperties.toString()}
+      </div>
       <div className="mt-10">답변:</div>
       <div>
         {tokens.map((token, idx) => (
