@@ -52,6 +52,7 @@ export default function PropertyList({
               width={22}
               height={20}
               alt="close"
+              style={{ width: 22, height: 20 }}
               className="cursor-pointer"
               onClick={() => {
                 setShowPropertyList(false);
@@ -93,6 +94,7 @@ export default function PropertyList({
                 width={100}
                 height={100}
                 alt="thumbnail"
+                style={{ width: 100, height: 100 }}
               />
               {idx === 0 ? (
                 <Image
@@ -100,6 +102,7 @@ export default function PropertyList({
                   width={24}
                   height={28.67}
                   alt="first-recommend"
+                  style={{ width: 24, height: 28.67 }}
                   className="absolute top-6 left-7"
                 />
               ) : null}
@@ -108,7 +111,8 @@ export default function PropertyList({
                   src="/mini-marker-second.svg"
                   width={24}
                   height={28.67}
-                  alt="first-recommend"
+                  alt="second-recommend"
+                  style={{ width: 24, height: 28.67 }}
                   className="absolute top-6 left-7"
                 />
               ) : null}
@@ -117,7 +121,8 @@ export default function PropertyList({
                   src="/mini-marker-third.svg"
                   width={24}
                   height={28.67}
-                  alt="first-recommend"
+                  alt="third-recommend"
+                  style={{ width: 24, height: 28.67 }}
                   className="absolute top-6 left-7"
                 />
               ) : null}
@@ -126,6 +131,7 @@ export default function PropertyList({
                 width={19.6}
                 height={19.6}
                 alt="heart"
+                style={{ width: 19.6, height: 19.6 }}
                 className="absolute top-[90px] left-[90px]"
               />
               <div className="w-full space-y-[3px]">
@@ -186,12 +192,14 @@ export default function PropertyList({
                 width={100}
                 height={100}
                 alt="thumbnail"
+                style={{ width: 100, height: 100 }}
               />
               <Image
                 src="/btn-heart-outline.svg"
                 width={19.6}
                 height={19.6}
                 alt="heart"
+                style={{ width: 19.6, height: 19.6 }}
                 className="absolute top-[90px] left-[90px]"
               />
               <div className="w-full space-y-[3px]">

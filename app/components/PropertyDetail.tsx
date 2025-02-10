@@ -40,12 +40,13 @@ export default function PropertyDetail({
 
   return (
     <>
-      <div className="w-full h-[51px] border-b-[1px] border-b-[#E9E9F1] bg-white flex justify-between flex-row px-3 sticky top-0 z-50">
+      <div className="w-full h-[51px] border-b-[1px] border-b-[#E9E9F1] bg-white flex justify-between items-center flex-row px-3 sticky top-0 z-50">
         <Image
           src="/arrow-left.svg"
           width={24}
           height={24}
           alt="close"
+          style={{ width: 24, height: 24 }}
           className="cursor-pointer"
           onClick={() => setFocusedPropertyId(null)}
         />
@@ -54,6 +55,7 @@ export default function PropertyDetail({
           width={24}
           height={24}
           alt="share"
+          style={{ width: 24, height: 24 }}
           className="cursor-pointer"
         />
       </div>
@@ -68,6 +70,7 @@ export default function PropertyDetail({
             width={355}
             height={245}
             alt="property-detail-photo"
+            style={{ width: 355, height: 245 }}
           />
         </div>
 
@@ -76,7 +79,13 @@ export default function PropertyDetail({
             [일반상가] {propertyDetail?.nearest_station} ·{" "}
             {propertyDetail?.purpose}
             <span className="pr-1 text-xs font-medium flex flex-row items-center">
-              <Image src="/view.svg" width={20} height={20} alt="views" />
+              <Image
+                src="/view.svg"
+                width={20}
+                height={20}
+                alt="views"
+                style={{ width: 20, height: 20 }}
+              />
               162
             </span>
           </div>
@@ -176,29 +185,35 @@ export default function PropertyDetail({
                   <div className="font-normal flex justify-between">
                     층수{" "}
                     <span className="font-semibold">
-                      {propertyDetail?.floor} / 총{" "}
-                      {propertyDetail?.building_info.replace(/[^0-9]/g, "")} 층
+                      {propertyDetail.floor ?? "-"} / 총{" "}
+                      {propertyDetail.building_info
+                        ? propertyDetail.building_info.replace(/[^0-9]/g, "")
+                        : "-"}{" "}
+                      층
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
                     주변 지하철 역{" "}
                     <span className="font-semibold">
-                      {propertyDetail?.nearest_station +
-                        " " +
-                        propertyDetail?.distance_to_station}
+                      {propertyDetail.nearest_station &&
+                      propertyDetail.distance_to_station
+                        ? propertyDetail.nearest_station +
+                          " " +
+                          propertyDetail.distance_to_station
+                        : "-"}
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
                     추천 업종{" "}
                     <span className="font-semibold">
-                      {propertyDetail?.purpose}
+                      {propertyDetail.purpose ?? "-"}
                     </span>
                   </div>
                 </div>
                 <div className="space-y-3 px-5 py-[10px]">
                   <div className="font-semibold">중개사 코멘트</div>
                   <div className="font-normal text-center px-2">
-                    {propertyDetail?.agent_comment}
+                    {propertyDetail.agent_comment ?? "-"}
                   </div>
                 </div>
                 <div className="space-y-3 px-5 py-[10px]">
@@ -210,11 +225,12 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="rental-status"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">임대 상태</div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.rental_status}
+                          {propertyDetail.rental_status ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -224,11 +240,12 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="heating-type"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">난방</div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.heating_type}
+                          {propertyDetail.heating_type ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -240,13 +257,14 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="available-date"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">
                           입주 가능일
                         </div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.available_date}
+                          {propertyDetail.available_date ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -256,11 +274,12 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="direction"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">방향</div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.direction}
+                          {propertyDetail.direction ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -272,6 +291,7 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="interior"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">인테리어</div>
@@ -284,13 +304,14 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="property-registry"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">
                           등기부 등본
                         </div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.property_registry}
+                          {propertyDetail.property_registry ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -302,13 +323,14 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="parking-info"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">
                           주차 가능 / 총 주차
                         </div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.parking_info}
+                          {propertyDetail.parking_info ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -318,11 +340,12 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="bathroom-info"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">화장실</div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.bathroom_info}
+                          {propertyDetail.bathroom_info ?? "-"}
                         </div>
                       </div>
                     </div>
@@ -334,13 +357,14 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="elavator-count"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">
                           엘리베이터
                         </div>
                         <div className="text-[14px] font-semibold">
-                          {propertyDetail?.elevator_count}대
+                          {propertyDetail.elevator_count ?? "-"}대
                         </div>
                       </div>
                     </div>
@@ -350,6 +374,7 @@ export default function PropertyDetail({
                         width={40}
                         height={40}
                         alt="window"
+                        style={{ width: 40, height: 40 }}
                       />
                       <div className="flex flex-col ">
                         <div className="text-[12px] font-normal">창문</div>
@@ -378,6 +403,7 @@ export default function PropertyDetail({
                 width={355}
                 height={185}
                 alt="roadview"
+                style={{ width: 355, height: 185 }}
               />
             </>
           ) : null}
@@ -393,6 +419,7 @@ export default function PropertyDetail({
                   width={13}
                   height={13}
                   alt="go to Commercial analysis"
+                  style={{ width: 13, height: 13 }}
                 />
               </div>
 
@@ -434,6 +461,7 @@ export default function PropertyDetail({
                   width={355}
                   height={185}
                   alt="map"
+                  style={{ width: 355, height: 185 }}
                   className="cursor-pointer"
                 />
               </div>
@@ -449,6 +477,7 @@ export default function PropertyDetail({
                   width={315}
                   height={100}
                   alt="agent"
+                  style={{ width: 315, height: 100 }}
                 />
               </div>
               <div className="text-base font-semibold text-[#121212]">
@@ -462,6 +491,7 @@ export default function PropertyDetail({
                       width={126}
                       height={126}
                       alt="property thumbnail"
+                      style={{ width: 126, height: 126 }}
                       className="rounded-xl py-2"
                     />
 
@@ -486,6 +516,7 @@ export default function PropertyDetail({
           width={36}
           height={36}
           alt="like"
+          style={{ width: 36, height: 36 }}
           className="cursor-pointer transition"
           onClick={() => {
             if (liked) {

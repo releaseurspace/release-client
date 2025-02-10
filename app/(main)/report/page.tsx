@@ -1,6 +1,7 @@
 "use client";
 
 import NavBar from "@/app/components/NavBar";
+import callAPI from "@/app/util/call-api";
 import { useState } from "react";
 
 export default function Home() {
@@ -30,33 +31,43 @@ export default function Home() {
       <button
         className="mt-20 ml-6 border-2 rounded-lg px-3 bg-slate-300"
         onClick={async () => {
-          const res = await fetch(
-            "https://3.38.128.30.nip.io/langchain/stream",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                userId: "99",
-                content: question,
-              }),
-            }
-          );
+          console.log("start", Date.now());
+          const chatbotRes = await callAPI({
+            url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain/stream",
+            method: "POST",
+            isPrivate: false,
+            body: {
+              userId,
+              content: question,
+            },
+          });
           setQuestion("");
 
-          // console.log("res", res);
-          // const resData = await res.json()
-          // console.log(resData)
-
-          const reader = res
+          const reader = chatbotRes
             .body!.pipeThrough(new TextDecoderStream())
             .getReader();
+
+          if (reader) {
+            console.log(Date.now());
+            const propertiesRes = await (
+              await callAPI({
+                url:
+                  process.env.NEXT_PUBLIC_SERVER_URL +
+                  "/langchain/properties" +
+                  "?userId=" +
+                  userId,
+                method: "GET",
+                isPrivate: false,
+              })
+            ).json();
+
+            console.log(propertiesRes);
+          }
 
           while (true) {
             const { value, done } = await reader.read();
             if (done) break;
-            console.log("value",value)
+            console.log("value", value);
 
             const lines = value.split("\n");
             // console.log("lines", lines)

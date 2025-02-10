@@ -16,8 +16,9 @@ export default function NavBar() {
         <Image
           src="/logo.svg"
           width={104}
-          height={20}
+          height={44}
           alt="release"
+          style={{ width: 104, height: 44 }}
           className="cursor-pointer"
           onClick={() => router.push("/")}
         />
@@ -45,6 +46,7 @@ export default function NavBar() {
           width={40}
           height={40}
           alt="profile"
+          style={{ width: 40, height: 40 }}
           className="cursor-pointer"
           onMouseOver={() => setProfileHovered(true)}
           onMouseOut={() => setProfileHovered(false)}

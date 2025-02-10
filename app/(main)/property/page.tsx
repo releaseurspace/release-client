@@ -2,7 +2,7 @@
 
 import NavBar from "@/app/components/NavBar";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MultilineText from "@/app/components/MultilineText";
 import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
@@ -14,7 +14,7 @@ import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 export default function Home() {
   const [promptLines, setPromptLines] = useState<number>(1);
   const [questions, setQuestions] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<string[][]>([]);
   const [mainProperties, setMainProperties] = useState<Property[]>([]);
   const [subProperties, setSubProperties] = useState<Property[]>([]);
 
@@ -27,64 +27,65 @@ export default function Home() {
   const [questionInput, setQuestionInput] = useState<string>("");
 
   async function chatbotSumbit() {
-    const res = await (
-      await callAPI({
-        url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain",
-        method: "POST",
-        isPrivate: false,
-        body: {
-          userId: username,
-          content: questionInput,
-        },
-      })
-    ).json();
-
-    const answer = res.chatResponse;
-    const mainPropertiesData = res.mainProperties.map((property: Property) => {
-      return {
-        id: property.id,
-        latitude: property.latitude,
-        longitude: property.longitude,
-        purpose: property.purpose,
-        deposit: property.deposit,
-        monthly_rent: property.monthly_rent,
-        key_money: property.key_money,
-        maintenance_fee: property.maintenance_fee,
-        size: property.size,
-        description: property.description,
-        floor: property.floor,
-        nearest_station: property.nearest_station,
-        distance_to_station: property.distance_to_station,
-      };
+    const chatbotRes = await callAPI({
+      url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain/stream",
+      method: "POST",
+      isPrivate: false,
+      body: {
+        userId: username,
+        content: questionInput,
+      },
     });
 
-    const subPropertiesData = res.subProperties.map((property: Property) => {
-      return {
-        id: property.id,
-        latitude: property.latitude,
-        longitude: property.longitude,
-        purpose: property.purpose,
-        deposit: property.deposit,
-        monthly_rent: property.monthly_rent,
-        key_money: property.key_money,
-        maintenance_fee: property.maintenance_fee,
-        size: property.size,
-        description: property.description,
-        floor: property.floor,
-        nearest_station: property.nearest_station,
-        distance_to_station: property.distance_to_station,
-      };
-    });
+    const reader = chatbotRes
+      .body!.pipeThrough(new TextDecoderStream())
+      .getReader();
 
-    if (answer) {
-      setAnswers((prev) => [...prev, answer as string]);
+    if (reader) {
+      const propertiesRes = await (
+        await callAPI({
+          url:
+            process.env.NEXT_PUBLIC_SERVER_URL +
+            "/langchain/properties" +
+            "?userId=" +
+            username,
+          method: "GET",
+          isPrivate: false,
+        })
+      ).json();
+
+      setMainProperties(propertiesRes.mainProperties);
+      setSubProperties(propertiesRes.subProperties);
     }
-    if (mainPropertiesData.length > 0 || subPropertiesData.length > 0) {
-      setMainProperties(mainPropertiesData);
-      setSubProperties(subPropertiesData);
-      setFocusedPropertyId(null);
+
+    const addedAnswers = answers;
+    addedAnswers.push([]);
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const lines = value.split("\n");
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        try {
+          const parsed = JSON.parse(trimmed);
+
+          addedAnswers[addedAnswers.length - 1].push(parsed.token);
+
+          setAnswers(addedAnswers);
+        } catch (e) {
+          console.error("JSON 파싱 에러:", e, trimmed);
+        }
+      }
     }
   }
+
+  useEffect(() => {
+    setTimeout(() => setAnswers((prev) => prev), 100);
+  }, [answers]);
 
   return (
     <div className="h-[100vh]">
@@ -101,6 +102,7 @@ export default function Home() {
               width={22}
               height={26}
               alt="ai chatbot"
+              style={{ width: 22, height: 26 }}
             />
           </div>
         ) : null}
@@ -138,18 +140,23 @@ export default function Home() {
                       width={36}
                       height={36}
                       alt="ai chatbot"
+                      style={{ width: 36, height: 36 }}
                     />
                     {answers[idx] ? (
                       <div className="bg-[#F4F4F4] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                        <TypingText text={answers[idx]} />
+                        <TypingText text={answers[idx].join("")} />
+                        {/* {answers[idx].map((text, index) => (
+                          <span key={index}>{text}</span>
+                        ))} */}
                       </div>
                     ) : (
                       <Image
                         src="/loading1.gif"
                         width={60}
-                        height={60}
+                        height={45}
                         alt="loading..."
                         className="rounded-b-3xl rounded-tr-3xl rounded-tl"
+                        style={{ width: 60, height: 45 }}
                       />
                     )}
                   </div>
@@ -163,6 +170,7 @@ export default function Home() {
                 width={54}
                 height={54}
                 alt="ai chatbot"
+                style={{ width: 54, height: 54 }}
               />
               <div className="font-bold text-xl text-[#2D125F] mt-[12px]">
                 릴리스 AI 비서
@@ -223,6 +231,7 @@ export default function Home() {
                   height={32}
                   alt="submit"
                   className="absolute bottom-[10.5px] right-[5px] cursor-pointer"
+                  style={{ width: 32, height: 32 }}
                 />
               </button>
             </div>

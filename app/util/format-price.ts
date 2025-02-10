@@ -1,5 +1,7 @@
 export default function formatPrice(price: number): string {
-  if (price < 10000) {
+  if (price === 0) {
+    return "없음";
+  } else if (price < 10000) {
     return price + "만";
   } else {
     const divided = (price / 10000).toString().split(".");
