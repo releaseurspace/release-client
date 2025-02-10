@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Property } from "../types/property";
 import { Dispatch, SetStateAction } from "react";
 import PropertyDetail from "./PropertyDetail";
+import formatPrice from "../util/format-price";
 
 export default function PropertyList({
   mainProperties,
@@ -131,12 +132,12 @@ export default function PropertyList({
                 <div className="space-y-[2px] *:text-[#121212]">
                   <div className="text-xs font-medium">{property.purpose}</div>
                   <div className="text-base font-bold">
-                    월세 {property.deposit}만/
-                    {property.monthly_rent}만
+                    월세 {formatPrice(property.deposit)}/
+                    {formatPrice(property.monthly_rent)}
                   </div>
                   <div className="text-xs font-bold">
-                    권리금 {property.key_money}만 / 관리비{" "}
-                    {property.maintenance_fee}만
+                    권리금 {formatPrice(property.key_money)} / 관리비{" "}
+                    {formatPrice(property.maintenance_fee)}
                   </div>
                 </div>
                 <svg
@@ -197,12 +198,12 @@ export default function PropertyList({
                 <div className="space-y-[2px] *:text-[#121212]">
                   <div className="text-xs font-medium">{property.purpose}</div>
                   <div className="text-base font-bold">
-                    월세 {property.deposit}만/
-                    {property.monthly_rent}만
+                    월세 {formatPrice(property.deposit)}/
+                    {formatPrice(property.monthly_rent)}
                   </div>
                   <div className="text-xs font-bold">
-                    권리금 {property.key_money}만 / 관리비{" "}
-                    {property.maintenance_fee}만
+                    권리금 {formatPrice(property.key_money)} / 관리비{" "}
+                    {formatPrice(property.maintenance_fee)}
                   </div>
                 </div>
                 <svg

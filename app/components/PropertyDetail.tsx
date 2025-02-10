@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import callAPI from "../util/call-api";
 import { PropertyDetails } from "../types/propertyDetail";
+import formatPrice from "../util/format-price";
 
 export default function PropertyDetail({
   focusedPropertyId,
@@ -12,9 +13,7 @@ export default function PropertyDetail({
 }) {
   const [selectedTapId, setSelectedTapId] = useState<number>(0);
   const [liked, setLiked] = useState<boolean>(false);
-  const [propertyDetail, setPropertyDetail] = useState<PropertyDetails | null>(
-    null
-  );
+  const [propertyDetail, setPropertyDetail] = useState<PropertyDetails>();
 
   useEffect(() => {
     async function getPropertyDetail() {
@@ -59,7 +58,10 @@ export default function PropertyDetail({
         />
       </div>
 
-      <div id="detail" className="w-full h-full overflow-y-auto scrollbar-hide pb-[106px]">
+      <div
+        id="detail"
+        className="w-full h-full overflow-y-auto scrollbar-hide pb-[106px]"
+      >
         <div>
           <Image
             src="example-property-detail.svg"
@@ -122,31 +124,31 @@ export default function PropertyDetail({
         </div>
 
         <div className="w-full">
-          {selectedTapId === 0 ? (
+          {selectedTapId === 0 && propertyDetail ? (
             <>
               <div className="*:text-[#121212] px-5 py-4 flex flex-col justify-center">
                 <div className="font-normal flex justify-between">
                   보증금{" "}
                   <span className="font-semibold">
-                    {propertyDetail?.deposit}
+                    {formatPrice(propertyDetail?.deposit)}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   권리금{" "}
                   <span className="font-semibold">
-                    {propertyDetail?.key_money}
+                    {formatPrice(propertyDetail?.key_money)}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   월세{" "}
                   <span className="font-semibold">
-                    {propertyDetail?.monthly_rent}
+                    {formatPrice(propertyDetail?.monthly_rent)}
                   </span>
                 </div>
                 <div className="font-normal flex justify-between">
                   관리비{" "}
                   <span className="font-semibold">
-                    {propertyDetail?.maintenance_fee}
+                    {formatPrice(propertyDetail?.maintenance_fee)}
                   </span>
                 </div>
               </div>
@@ -174,7 +176,8 @@ export default function PropertyDetail({
                   <div className="font-normal flex justify-between">
                     층수{" "}
                     <span className="font-semibold">
-                      {propertyDetail?.floor} / 총 {propertyDetail?.building_info.replace(/[^0-9]/g,"")} 층
+                      {propertyDetail?.floor} / 총{" "}
+                      {propertyDetail?.building_info.replace(/[^0-9]/g, "")} 층
                     </span>
                   </div>
                   <div className="font-normal flex justify-between">
@@ -381,7 +384,7 @@ export default function PropertyDetail({
         </div>
 
         <div className="w-full">
-          {selectedTapId === 1 ? (
+          {selectedTapId === 1 && propertyDetail ? (
             <>
               <div className="h-[40px] text-[#5E3AA1] text-base font-semibold bg-[#F1F1FF] flex flex-row items-center justify-center gap-2 cursor-pointer">
                 상권 정보 더보기
@@ -438,7 +441,7 @@ export default function PropertyDetail({
           ) : null}
         </div>
         <div className="w-full">
-          {selectedTapId === 2 ? (
+          {selectedTapId === 2 && propertyDetail ? (
             <div className="*:px-5">
               <div className="py-6">
                 <Image

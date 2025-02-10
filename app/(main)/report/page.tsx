@@ -45,7 +45,7 @@ export default function Home() {
           );
           setQuestion("");
 
-          console.log("res", res);
+          // console.log("res", res);
           // const resData = await res.json()
           // console.log(resData)
 
@@ -59,7 +59,7 @@ export default function Home() {
             console.log("value",value)
 
             const lines = value.split("\n");
-            console.log("lines", lines)
+            // console.log("lines", lines)
             for (const line of lines) {
               const trimmed = line.trim();
               if (!trimmed) continue;

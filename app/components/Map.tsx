@@ -210,8 +210,9 @@ export default function Map({
   //     const dongFeatures = map.data
   //       .getAllFeature()
   //       .slice(25, map.data.getAllFeature().length);
+  //       console.log(dongFeatures.map((feature) => feature.getRaw()))
 
-  //     map.data.setStyle(focusedStyle);
+  //     // dongFeatures.
 
   //     //행정구역 구 마커
   //   });
