@@ -1,8 +1,10 @@
+
+
 "use client";
 
 import NavBar from "@/app/components/NavBar";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MultilineText from "@/app/components/MultilineText";
 import TypingText from "@/app/components/TypingText";
 import { Property } from "@/app/types/property";
@@ -14,7 +16,7 @@ import AutoScrollDiv from "@/app/components/AutoScrollDiv";
 export default function Home() {
   const [promptLines, setPromptLines] = useState<number>(1);
   const [questions, setQuestions] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<string[][]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
   const [mainProperties, setMainProperties] = useState<Property[]>([]);
   const [subProperties, setSubProperties] = useState<Property[]>([]);
 
@@ -27,65 +29,64 @@ export default function Home() {
   const [questionInput, setQuestionInput] = useState<string>("");
 
   async function chatbotSumbit() {
-    const chatbotRes = await callAPI({
-      url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain/stream",
-      method: "POST",
-      isPrivate: false,
-      body: {
-        userId: username,
-        content: questionInput,
-      },
+    const res = await (
+      await callAPI({
+        url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain",
+        method: "POST",
+        isPrivate: false,
+        body: {
+          userId: username,
+          content: questionInput,
+        },
+      })
+    ).json();
+
+    const answer = res.chatResponse;
+    const mainPropertiesData = res.mainProperties.map((property: Property) => {
+      return {
+        id: property.id,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        purpose: property.purpose,
+        deposit: property.deposit,
+        monthly_rent: property.monthly_rent,
+        key_money: property.key_money,
+        maintenance_fee: property.maintenance_fee,
+        size: property.size,
+        description: property.description,
+        floor: property.floor,
+        nearest_station: property.nearest_station,
+        distance_to_station: property.distance_to_station,
+      };
     });
 
-    const reader = chatbotRes
-      .body!.pipeThrough(new TextDecoderStream())
-      .getReader();
+    const subPropertiesData = res.subProperties.map((property: Property) => {
+      return {
+        id: property.id,
+        latitude: property.latitude,
+        longitude: property.longitude,
+        purpose: property.purpose,
+        deposit: property.deposit,
+        monthly_rent: property.monthly_rent,
+        key_money: property.key_money,
+        maintenance_fee: property.maintenance_fee,
+        size: property.size,
+        description: property.description,
+        floor: property.floor,
+        nearest_station: property.nearest_station,
+        distance_to_station: property.distance_to_station,
+      };
+    });
 
-    if (reader) {
-      const propertiesRes = await (
-        await callAPI({
-          url:
-            process.env.NEXT_PUBLIC_SERVER_URL +
-            "/langchain/properties" +
-            "?userId=" +
-            username,
-          method: "GET",
-          isPrivate: false,
-        })
-      ).json();
-
-      setMainProperties(propertiesRes.mainProperties);
-      setSubProperties(propertiesRes.subProperties);
+    if (answer) {
+      setAnswers((prev) => [...prev, answer as string]);
     }
-
-    const addedAnswers = answers;
-    addedAnswers.push([]);
-
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
-
-      const lines = value.split("\n");
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        try {
-          const parsed = JSON.parse(trimmed);
-
-          addedAnswers[addedAnswers.length - 1].push(parsed.token);
-
-          setAnswers(addedAnswers);
-        } catch (e) {
-          console.error("JSON 파싱 에러:", e, trimmed);
-        }
-      }
+    if (mainPropertiesData.length > 0 || subPropertiesData.length > 0) {
+      setMainProperties(mainPropertiesData);
+      setSubProperties(subPropertiesData);
+      setFocusedPropertyId(null);
     }
   }
-
-  useEffect(() => {
-    setTimeout(() => setAnswers((prev) => prev), 100);
-  }, [answers]);
 
   return (
     <div className="h-[100vh]">
@@ -144,10 +145,7 @@ export default function Home() {
                     />
                     {answers[idx] ? (
                       <div className="bg-[#F4F4F4] px-4 py-2 text-base font-medium rounded-b-3xl rounded-tr-3xl rounded-tl size-fit min-w-48">
-                        <TypingText text={answers[idx].join("")} />
-                        {/* {answers[idx].map((text, index) => (
-                          <span key={index}>{text}</span>
-                        ))} */}
+                        <TypingText text={answers[idx]} />
                       </div>
                     ) : (
                       <Image
@@ -236,7 +234,12 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="text-xs text-[#645B75] text-center">
+            <div
+              className="text-xs text-[#645B75] text-center"
+              onClick={() => {
+                console.log(answers);
+              }}
+            >
               릴리스 비서는 실수를 할 수 있습니다. 원하는 매물 정보를 정확히
               입력하세요.
             </div>
@@ -255,3 +258,4 @@ export default function Home() {
     </div>
   );
 }
+

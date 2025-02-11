@@ -188,7 +188,7 @@ export default function PropertyDetail({
                       {propertyDetail.floor ?? "-"} / 총{" "}
                       {propertyDetail.building_info
                         ? propertyDetail.building_info.replace(/[^0-9]/g, "")
-                        : "-"}{" "}
+                        : "-"}
                       층
                     </span>
                   </div>

@@ -99,11 +99,11 @@ export default function Home() {
       <div className="mt-10"></div>
       <div>
         mainProperties: <br />
-        {mainProperties.toString()}
+        {mainProperties}
       </div>
       <div>
         subProperties: <br />
-        {subProperties.toString()}
+        {subProperties}
       </div>
       <div className="mt-10">답변:</div>
       <div>
