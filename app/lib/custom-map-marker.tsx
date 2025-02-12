@@ -10,7 +10,7 @@ export const generalFocusedMarker = `<div style="position: relative;">
           </div>`;
 
 export const firstUnfocusedMarker = `
-<div style="position: relative;">
+<div style="position: relative; z-index: 100;">
 <svg style="top: -34; left: -12; position: absolute;" width="37" height="44" viewBox="0 0 37 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.81627 31.0473C-1.21317 24.0178 -1.21317 12.6209 5.81627 5.59141C12.8457 -1.43802 24.2427 -1.43802 31.2721 5.59141C38.3016 12.6209 38.3016 24.0178 31.2721 31.0473L18.7962 43.5231C18.657 43.6623 18.4314 43.6623 18.2922 43.5231L5.81627 31.0473Z" fill="#885AFF"/>
 <circle cx="18.5442" cy="18.3193" r="10" fill="white"/>
@@ -20,7 +20,7 @@ export const firstUnfocusedMarker = `
 `;
 
 export const secondUnfocusedMarker = `
-<div style="position: relative;">
+<div style="position: relative; z-index: 100;">
 <svg style="top: -34.5; left: -11; position: absolute;" width="36" height="44" viewBox="0 0 36 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.27208 31.0473C-1.75736 24.0178 -1.75736 12.6209 5.27208 5.59141C12.3015 -1.43802 23.6985 -1.43802 30.7279 5.59141C37.7574 12.6209 37.7574 24.0178 30.7279 31.0473L18.252 43.5231C18.1128 43.6623 17.8872 43.6623 17.748 43.5231L5.27208 31.0473Z" fill="#885AFF"/>
 <circle cx="18" cy="18.3193" r="10" fill="white"/>
@@ -30,7 +30,7 @@ export const secondUnfocusedMarker = `
 `;
 
 export const thirdUnfocusedMarker = `
-<div style="position: relative;">
+<div style="position: relative; z-index: 100;">
 <svg style="top: -34; left: -12; position: absolute;" width="37" height="44" viewBox="0 0 37 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5.72814 31.0473C-1.3013 24.0178 -1.3013 12.6209 5.72814 5.59141C12.7576 -1.43802 24.1545 -1.43802 31.184 5.59141C38.2134 12.6209 38.2134 24.0178 31.184 31.0473L18.7081 43.5231C18.5689 43.6623 18.3432 43.6623 18.204 43.5231L5.72814 31.0473Z" fill="#885AFF"/>
 <circle cx="18.4561" cy="18.3193" r="10" fill="white"/>
@@ -39,7 +39,7 @@ export const thirdUnfocusedMarker = `
 </div>
 `;
 
-export const firstFocusedMarker = `<div style="position: relative;">
+export const firstFocusedMarker = `<div style="position: relative; z-index: 100;">
 <svg style="top: -37; left: -19; position: absolute;" width="51" height="59" viewBox="0 0 51 59" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_805_14534)">
 <path d="M12.816 33.7279C5.78659 26.6985 5.78659 15.3015 12.816 8.27208C19.8455 1.24264 31.2424 1.24264 38.2719 8.27208C45.3013 15.3015 45.3013 26.6985 38.2719 33.7279L25.796 46.2038C25.6568 46.343 25.4311 46.343 25.2919 46.2038L12.816 33.7279Z" fill="#5E3AA1"/>
@@ -61,7 +61,7 @@ export const firstFocusedMarker = `<div style="position: relative;">
 </svg>
 </div>
 `;
-export const secondFocusedMarker = `<div style="position: relative;">
+export const secondFocusedMarker = `<div style="position: relative; z-index: 100;">
 <svg style="top: -37; left: -19; position: absolute;" width="52" height="59" viewBox="0 0 52 59" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_805_14533)">
 <path d="M13.2721 33.7279C6.24264 26.6985 6.24264 15.3015 13.2721 8.27208C20.3015 1.24264 31.6985 1.24264 38.7279 8.27208C45.7574 15.3015 45.7574 26.6985 38.7279 33.7279L26.252 46.2038C26.1128 46.343 25.8872 46.343 25.748 46.2038L13.2721 33.7279Z" fill="#5E3AA1"/>
@@ -84,7 +84,7 @@ export const secondFocusedMarker = `<div style="position: relative;">
 </div>
 `;
 export const thirdFocusedMarker = `
-<div style="position: relative;">
+<div style="position: relative; z-index: 100;">
 <svg style="top: -37; left: -19; position: absolute;" width="51" height="59" viewBox="0 0 51 59" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_d_805_14532)">
 <path d="M12.7281 33.7279C5.6987 26.6985 5.6987 15.3015 12.7281 8.27208C19.7576 1.24264 31.1545 1.24264 38.184 8.27208C45.2134 15.3015 45.2134 26.6985 38.184 33.7279L25.7081 46.2038C25.5689 46.343 25.3432 46.343 25.204 46.2038L12.7281 33.7279Z" fill="#5E3AA1"/>
