@@ -19,10 +19,11 @@ import {
   guRegionMarkerData,
 } from "../lib/seoulRegionMarkerData";
 import {
+  focusedDongRegionMarker,
   focusedGuRegionMarker,
+  unfocusedDongRegionMarker,
   unfocusedGuRegionMarker,
 } from "../lib/custom-map-region-marker";
-import { dongNames, guNames } from "../lib/seoulAreaName";
 import { defaultStyle, focusedStyle } from "../lib/geojsonFeatureStyle";
 import { seoulDongGeoJson, seoulGuGeoJson } from "../lib/seoulGeojson";
 
@@ -147,7 +148,6 @@ export default function Map({
             size: new naver.maps.Size(77.99, 63.99),
             anchor: new naver.maps.Point(0, 0),
           });
-
           naver.maps.Event.resumeDispatch(marker, "mouseout");
 
           guFeatures[idx].setStyle(focusedStyle);
@@ -175,7 +175,7 @@ export default function Map({
           guRegionMarkersRef.current.forEach((marker, index) => {
             if (index !== idx) {
               marker.setIcon({
-                content: unfocusedGuRegionMarker(guNames[index]),
+                content: unfocusedGuRegionMarker(guRegionMarkerData[index].guName),
                 size: new naver.maps.Size(77.99, 63.99),
                 anchor: new naver.maps.Point(0, 0),
               });
@@ -196,19 +196,19 @@ export default function Map({
       const newDongRegionMarkers = dongRegionMarkerData.map((region, idx) => {
         const latlng = new naver.maps.LatLng(region.lat, region.lng);
 
-        const unfocusedIcon = unfocusedGuRegionMarker(region.dongName);
-        const focusedIcon = focusedGuRegionMarker(region.dongName);
+        const unfocusedIcon = unfocusedDongRegionMarker(region.guName,region.dongName);
+        const focusedIcon = focusedDongRegionMarker(region.guName,region.dongName);
 
         const marker = new naver.maps.Marker({
           position: latlng,
           map: mapRef.current,
           icon: {
             content: unfocusedIcon,
-            size: new naver.maps.Size(77.99, 63.99),
+            size: new naver.maps.Size(78, 63.99),
             anchor: new naver.maps.Point(0, 0),
           },
           shape: {
-            coords: [0, 0, 69, 47],
+            coords: [0, 0, 68, 47],
             type: "rect",
           },
           visible: false,
@@ -217,7 +217,7 @@ export default function Map({
         naver.maps.Event.addListener(marker, "mouseover", () => {
           marker.setIcon({
             content: focusedIcon,
-            size: new naver.maps.Size(77.99, 63.99),
+            size: new naver.maps.Size(78, 63.99),
             anchor: new naver.maps.Point(0, 0),
           });
 
@@ -229,7 +229,7 @@ export default function Map({
         naver.maps.Event.addListener(marker, "mouseout", () => {
           marker.setIcon({
             content: unfocusedIcon,
-            size: new naver.maps.Size(77.99, 63.99),
+            size: new naver.maps.Size(78, 63.99),
             anchor: new naver.maps.Point(0, 0),
           });
 
@@ -248,8 +248,8 @@ export default function Map({
           dongRegionMarkersRef.current.forEach((marker, index) => {
             if (index !== idx) {
               marker.setIcon({
-                content: unfocusedGuRegionMarker(dongNames[index]),
-                size: new naver.maps.Size(77.99, 63.99),
+                content: unfocusedDongRegionMarker(dongRegionMarkerData[index].guName, dongRegionMarkerData[index].dongName),
+                size: new naver.maps.Size(78, 63.99),
                 anchor: new naver.maps.Point(0, 0),
               });
             }
@@ -292,7 +292,7 @@ export default function Map({
       guRegionMarkersRef.current.forEach((guMarker, idx) => {
         guMarker.setVisible(guVisible);
         guMarker.setIcon({
-          content: unfocusedGuRegionMarker(guNames[idx]),
+          content: unfocusedGuRegionMarker(guRegionMarkerData[idx].guName),
           size: new naver.maps.Size(77.99, 63.99),
           anchor: new naver.maps.Point(0, 0),
         });
@@ -301,7 +301,7 @@ export default function Map({
       dongRegionMarkersRef.current.forEach((dongMarker, idx) => {
         dongMarker.setVisible(dongVisible);
         dongMarker.setIcon({
-          content: unfocusedGuRegionMarker(dongNames[idx]),
+          content: unfocusedDongRegionMarker(dongRegionMarkerData[idx].guName,dongRegionMarkerData[idx].dongName),
           size: new naver.maps.Size(77.99, 63.99),
           anchor: new naver.maps.Point(0, 0),
         });
