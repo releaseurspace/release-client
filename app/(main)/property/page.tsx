@@ -236,9 +236,6 @@ export default function Home() {
 
             <div
               className="text-xs text-[#645B75] text-center"
-              onClick={() => {
-                console.log(answers);
-              }}
             >
               릴리스 비서는 실수를 할 수 있습니다. 원하는 매물 정보를 정확히
               입력하세요.

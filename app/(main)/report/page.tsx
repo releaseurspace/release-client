@@ -31,7 +31,6 @@ export default function Home() {
       <button
         className="mt-20 ml-6 border-2 rounded-lg px-3 bg-slate-300"
         onClick={async () => {
-          console.log("start", Date.now());
           const chatbotRes = await callAPI({
             url: process.env.NEXT_PUBLIC_SERVER_URL + "/langchain/stream",
             method: "POST",

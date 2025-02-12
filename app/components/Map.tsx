@@ -14,14 +14,17 @@ import {
   thirdUnfocusedMarker,
 } from "../lib/custom-map-marker";
 import { Property } from "../types/property";
-import { guRegionMarkerData } from "../lib/guRegionMarkerData";
+import {
+  dongRegionMarkerData,
+  guRegionMarkerData,
+} from "../lib/seoulRegionMarkerData";
 import {
   focusedGuRegionMarker,
   unfocusedGuRegionMarker,
 } from "../lib/custom-map-region-marker";
-import { guNames } from "../lib/seoulAreaName";
+import { dongNames, guNames } from "../lib/seoulAreaName";
 import { defaultStyle, focusedStyle } from "../lib/geojsonFeatureStyle";
-import { seoulGuGeoJson } from "../lib/seoulGeojson";
+import { seoulDongGeoJson, seoulGuGeoJson } from "../lib/seoulGeojson";
 
 const MAP_ID = "naver-map";
 
@@ -41,6 +44,7 @@ export default function Map({
   const mapRef = useRef<naver.maps.Map | undefined>(undefined);
   const propertyMarkersRef = useRef<naver.maps.Marker[]>([]);
   const guRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
+  const dongRegionMarkersRef = useRef<naver.maps.Marker[]>([]);
 
   const [zoomLevel, setZoomLevel] = useState<number>(12);
 
@@ -95,31 +99,26 @@ export default function Map({
     mapRef.current = map;
   }, []);
 
-  // 행정구역 구 폴리곤&마커 생성
+  // 행정구역 폴리곤&마커 생성
   useEffect(() => {
     const map = mapRef.current!;
 
     naver.maps.Event.once(map, "init", () => {
       //행정구역 구 폴리곤
-      const regionGeoJson = seoulGuGeoJson;
-
-      regionGeoJson.forEach((geojson) => {
+      const guGeoJson = seoulGuGeoJson;
+      guGeoJson.forEach((geojson) => {
         map.data.addGeoJson(geojson as naver.maps.GeoJSON, true);
       });
-
       const guFeatures = map.data.getAllFeature();
 
+      //행정구역 동 폴리곤
+      const dongGeoJson = seoulDongGeoJson;
+      map.data.addGeoJson(dongGeoJson as naver.maps.GeoJSON, true);
+      const dongFeatures = map.data
+        .getAllFeature()
+        .slice(25, map.data.getAllFeature().length);
+
       map.data.setStyle(defaultStyle);
-
-      map.data.addListener("click", function (e) {
-        const feature = e.feature;
-
-        if (feature.getProperty("focus") !== true) {
-          feature.setProperty("focus", true);
-        } else {
-          feature.setProperty("focus", false);
-        }
-      });
 
       //행정구역 구 마커
       const newGuRegionMarkers = guRegionMarkerData.map((region, idx) => {
@@ -193,51 +192,116 @@ export default function Map({
         return marker;
       });
 
+      //행정구역 동 마커
+      const newDongRegionMarkers = dongRegionMarkerData.map((region, idx) => {
+        const latlng = new naver.maps.LatLng(region.lat, region.lng);
+
+        const unfocusedIcon = unfocusedGuRegionMarker(region.dongName);
+        const focusedIcon = focusedGuRegionMarker(region.dongName);
+
+        const marker = new naver.maps.Marker({
+          position: latlng,
+          map: mapRef.current,
+          icon: {
+            content: unfocusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          },
+          shape: {
+            coords: [0, 0, 69, 47],
+            type: "rect",
+          },
+          visible: false,
+        });
+
+        naver.maps.Event.addListener(marker, "mouseover", () => {
+          marker.setIcon({
+            content: focusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          });
+
+          naver.maps.Event.resumeDispatch(marker, "mouseout");
+
+          dongFeatures[idx].setStyle(focusedStyle);
+        });
+
+        naver.maps.Event.addListener(marker, "mouseout", () => {
+          marker.setIcon({
+            content: unfocusedIcon,
+            size: new naver.maps.Size(77.99, 63.99),
+            anchor: new naver.maps.Point(0, 0),
+          });
+
+          dongFeatures[idx].setStyle(defaultStyle);
+        });
+
+        naver.maps.Event.addListener(marker, "click", () => {
+          marker.setIcon({
+            content: focusedIcon,
+          });
+
+          naver.maps.Event.stopDispatch(marker, "mouseout");
+
+          map.panTo(latlng, { duration: 400 });
+
+          dongRegionMarkersRef.current.forEach((marker, index) => {
+            if (index !== idx) {
+              marker.setIcon({
+                content: unfocusedGuRegionMarker(dongNames[index]),
+                size: new naver.maps.Size(77.99, 63.99),
+                anchor: new naver.maps.Point(0, 0),
+              });
+            }
+          });
+
+          dongFeatures.filter((feature, index) => {
+            if (index !== idx) {
+              feature.setStyle(defaultStyle);
+            }
+          });
+        });
+
+        return marker;
+      });
+
       guRegionMarkersRef.current = newGuRegionMarkers;
+      dongRegionMarkersRef.current = newDongRegionMarkers;
     });
   }, []);
 
-  // 행정구역 동 폴리곤&마커 생성
-  // useEffect(() => {
-  //   const map = mapRef.current!;
-
-  //   naver.maps.Event.once(map, "init", () => {
-  //     //행정구역 동 폴리곤
-  //     const regionGeoJson = seoulDongGeoJson;
-
-  //     map.data.addGeoJson(regionGeoJson as naver.maps.GeoJSON, true);
-
-  //     const dongFeatures = map.data
-  //       .getAllFeature()
-  //       .slice(25, map.data.getAllFeature().length);
-  //       console.log(dongFeatures.map((feature) => feature.getRaw()))
-
-  //     // dongFeatures.
-
-  //     //행정구역 구 마커
-  //   });
-  // }, []);
-
-  //줌 레벨 & 매물 검색 여부에 따라 구/동 마커 visible/invisible
+  // 줌 레벨 & 매물 검색 여부에 따라 행정구역 마커 visible/invisible
   useEffect(() => {
-    const guFeatures = mapRef.current!.data.getAllFeature();
-    guFeatures.forEach((feature) => {
+    const features = mapRef.current!.data.getAllFeature();
+    features.forEach((feature) => {
       feature.setStyle(defaultStyle);
     });
 
     const guVisible = zoomLevel >= 11 && zoomLevel <= 13;
-    // const dongInvisible;
+    const dongVisible = zoomLevel > 13;
     const allInvisible = mainProperties.length > 0 || subProperties.length > 0;
 
     if (allInvisible) {
       guRegionMarkersRef.current.forEach((guMarker) => {
         guMarker.setVisible(false);
       });
+      dongRegionMarkersRef.current.forEach((dongMarker) => {
+        dongMarker.setVisible(false);
+      });
     } else {
       guRegionMarkersRef.current.forEach((guMarker, idx) => {
         guMarker.setVisible(guVisible);
         guMarker.setIcon({
           content: unfocusedGuRegionMarker(guNames[idx]),
+          size: new naver.maps.Size(77.99, 63.99),
+          anchor: new naver.maps.Point(0, 0),
+        });
+      });
+
+      dongRegionMarkersRef.current.forEach((dongMarker, idx) => {
+        dongMarker.setVisible(dongVisible);
+        dongMarker.setIcon({
+          content: unfocusedGuRegionMarker(dongNames[idx]),
           size: new naver.maps.Size(77.99, 63.99),
           anchor: new naver.maps.Point(0, 0),
         });

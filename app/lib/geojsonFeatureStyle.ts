@@ -8,7 +8,7 @@ export const defaultStyle = {
 };
 export const focusedStyle = {
   fillColor: "#885AFF",
-  fillOpacity: 0.1,
+  fillOpacity: 0.2,
   strokeColor: "#885AFF",
   strokeWeight: 1.6,
   strokeOpacity: 1,
