@@ -1,6 +1,6 @@
 export const guRegionMarkerData = [
-  { guName: "강동구", lat: 37.5607, lng: 127.133 },
-  { guName: "송파구", lat: 37.51775556, lng: 127.1034306 },
+  { guName: "강동구", lat: 37.56, lng: 127.14 },
+  { guName: "송파구", lat: 37.51, lng: 127.11 },
   { guName: "강남구", lat: 37.5084, lng: 127.0403 },
   { guName: "서초구", lat: 37.49078611, lng: 127.0008111 },
   { guName: "관악구", lat: 37.47838611, lng: 126.9338444 },
@@ -178,8 +178,8 @@ export const dongRegionMarkerData = [
     adm_cd: "1102058",
     guName: "중구",
     dongName: "장충동",
-    lng: 127.0022,
-    lat: 37.55556,
+    lng: 127.0042,
+    lat: 37.55356,
   },
   {
     adm_cd: "1102059",
@@ -269,7 +269,7 @@ export const dongRegionMarkerData = [
     adm_cd: "1103053",
     guName: "용산구",
     dongName: "남영동",
-    lng: 126.9748,
+    lng: 126.9728,
     lat: 37.54403,
   },
   {

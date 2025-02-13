@@ -116,7 +116,18 @@ export const focusedGuRegionMarker = (guName: string) => `
 </svg>
         </div>`;
 
-export const unfocusedDongRegionMarker = (guName: string, dongName: string) => `
+export const unfocusedDongRegionMarker = (guName: string, dongName: string) => {
+  let dongNameFontsize = "12px";
+  if (dongName.length === 5) {
+    dongNameFontsize = "9px";
+  }
+  if (dongName.length === 6) {
+    dongNameFontsize = "8px";
+  }
+  if (dongName.length > 6) {
+    dongNameFontsize = "7px";
+  }
+  return `
         <div>
           <div
             style="
@@ -145,7 +156,7 @@ export const unfocusedDongRegionMarker = (guName: string, dongName: string) => `
               background-color: #FFF;
               color: #121212;
               text-align: center;
-              font-size: ${dongName.length < 5? "12px" : "9px"};
+              font-size: ${dongNameFontsize};
               font-weight: 600;
               position: absolute;
               top: 20px;
@@ -174,9 +185,20 @@ export const unfocusedDongRegionMarker = (guName: string, dongName: string) => `
 </defs>
 </svg>
         </div>`;
+};
 
-export const focusedDongRegionMarker = (guName: string, dongName: string) => `
-        <div>
+export const focusedDongRegionMarker = (guName: string, dongName: string) => {
+  let dongNameFontsize = "12px";
+  if (dongName.length === 5) {
+    dongNameFontsize = "9px";
+  }
+  if (dongName.length === 6) {
+    dongNameFontsize = "8px";
+  }
+  if (dongName.length > 6) {
+    dongNameFontsize = "7px";
+  }
+  return`<div>
           <div
             style="
               color: #FFF;
@@ -204,7 +226,7 @@ export const focusedDongRegionMarker = (guName: string, dongName: string) => `
               background-color: #FFF;
               color: #121212;
               text-align: center;
-              font-size: ${dongName.length < 5? "12px" : "9px"};
+              font-size: ${dongNameFontsize};
               font-weight: 600;
               position: absolute;
               top: 20px;
@@ -232,4 +254,4 @@ export const focusedDongRegionMarker = (guName: string, dongName: string) => `
 </filter>
 </defs>
 </svg>
-        </div>`;
+        </div>`}

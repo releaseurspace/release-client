@@ -175,7 +175,9 @@ export default function Map({
           guRegionMarkersRef.current.forEach((marker, index) => {
             if (index !== idx) {
               marker.setIcon({
-                content: unfocusedGuRegionMarker(guRegionMarkerData[index].guName),
+                content: unfocusedGuRegionMarker(
+                  guRegionMarkerData[index].guName
+                ),
                 size: new naver.maps.Size(77.99, 63.99),
                 anchor: new naver.maps.Point(0, 0),
               });
@@ -196,8 +198,14 @@ export default function Map({
       const newDongRegionMarkers = dongRegionMarkerData.map((region, idx) => {
         const latlng = new naver.maps.LatLng(region.lat, region.lng);
 
-        const unfocusedIcon = unfocusedDongRegionMarker(region.guName,region.dongName);
-        const focusedIcon = focusedDongRegionMarker(region.guName,region.dongName);
+        const unfocusedIcon = unfocusedDongRegionMarker(
+          region.guName,
+          region.dongName
+        );
+        const focusedIcon = focusedDongRegionMarker(
+          region.guName,
+          region.dongName
+        );
 
         const marker = new naver.maps.Marker({
           position: latlng,
@@ -205,7 +213,6 @@ export default function Map({
           icon: {
             content: unfocusedIcon,
             size: new naver.maps.Size(78, 63.99),
-            anchor: new naver.maps.Point(0, 0),
           },
           shape: {
             coords: [0, 0, 68, 47],
@@ -218,7 +225,6 @@ export default function Map({
           marker.setIcon({
             content: focusedIcon,
             size: new naver.maps.Size(78, 63.99),
-            anchor: new naver.maps.Point(0, 0),
           });
 
           naver.maps.Event.resumeDispatch(marker, "mouseout");
@@ -230,7 +236,6 @@ export default function Map({
           marker.setIcon({
             content: unfocusedIcon,
             size: new naver.maps.Size(78, 63.99),
-            anchor: new naver.maps.Point(0, 0),
           });
 
           dongFeatures[idx].setStyle(defaultStyle);
@@ -248,9 +253,11 @@ export default function Map({
           dongRegionMarkersRef.current.forEach((marker, index) => {
             if (index !== idx) {
               marker.setIcon({
-                content: unfocusedDongRegionMarker(dongRegionMarkerData[index].guName, dongRegionMarkerData[index].dongName),
+                content: unfocusedDongRegionMarker(
+                  dongRegionMarkerData[index].guName,
+                  dongRegionMarkerData[index].dongName
+                ),
                 size: new naver.maps.Size(78, 63.99),
-                anchor: new naver.maps.Point(0, 0),
               });
             }
           });
@@ -301,9 +308,11 @@ export default function Map({
       dongRegionMarkersRef.current.forEach((dongMarker, idx) => {
         dongMarker.setVisible(dongVisible);
         dongMarker.setIcon({
-          content: unfocusedDongRegionMarker(dongRegionMarkerData[idx].guName,dongRegionMarkerData[idx].dongName),
+          content: unfocusedDongRegionMarker(
+            dongRegionMarkerData[idx].guName,
+            dongRegionMarkerData[idx].dongName
+          ),
           size: new naver.maps.Size(77.99, 63.99),
-          anchor: new naver.maps.Point(0, 0),
         });
       });
     }
