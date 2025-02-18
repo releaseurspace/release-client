@@ -244,6 +244,7 @@ export default function Map({
         naver.maps.Event.addListener(marker, "click", () => {
           marker.setIcon({
             content: focusedIcon,
+            size: new naver.maps.Size(78, 63.99),
           });
 
           naver.maps.Event.stopDispatch(marker, "mouseout");

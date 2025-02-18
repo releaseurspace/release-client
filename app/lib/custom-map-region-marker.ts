@@ -199,9 +199,12 @@ export const focusedDongRegionMarker = (guName: string, dongName: string) => {
     dongNameFontsize = "8px";
   }
   if (dongName.length > 6) {
-    dongNameFontsize = "7px";
+    dongNameFontsize = "7.5px";
   }
-  return`<div>
+  if (dongName.length > 8) {
+    dongNameFontsize = "6.5px";
+  }
+  return `<div>
           <div
             style="
               color: #FFF;
@@ -257,4 +260,5 @@ export const focusedDongRegionMarker = (guName: string, dongName: string) => {
 </filter>
 </defs>
 </svg>
-        </div>`}
+        </div>`;
+};
