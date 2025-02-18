@@ -125,7 +125,10 @@ export const unfocusedDongRegionMarker = (guName: string, dongName: string) => {
     dongNameFontsize = "8px";
   }
   if (dongName.length > 6) {
-    dongNameFontsize = "7px";
+    dongNameFontsize = "7.5px";
+  }
+  if (dongName.length > 8) {
+    dongNameFontsize = "6.5px";
   }
   return `
         <div>
